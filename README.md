@@ -28,6 +28,8 @@ node scripts/serve.mjs
 
 若 npm 可用，也可执行 `npm test`、`npm run check`、`npm run build`、`npm run serve`。
 
+浏览器验证工具 `node scripts/verify-browser.mjs` 使用开发宿主已有的 Playwright 与 Chrome。可通过 `PLAYWRIGHT_MODULE` 指定宿主模块绝对路径；需先构建并启动预览。该可选工具不属于网页运行或构建依赖，不会进入 dist。
+
 ## 项目结构
 
 ```text
