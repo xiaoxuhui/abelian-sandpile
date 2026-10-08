@@ -6,7 +6,7 @@ import { root } from './build.mjs';
 const require=createRequire(import.meta.url), C=require('../src/domain/sandpile.js'), H=require('../src/domain/challenge.js');
 const reference=require('../tests/reference-engine.cjs');
 const levels=JSON.parse(readFileSync(join(root,'data/challenges/levels.json'),'utf8'));
-assert.equal(levels.length,6); assert.equal(new Set(levels.map(x=>x.id)).size,6);
+assert.equal(levels.length,10); assert.equal(new Set(levels.map(x=>x.id)).size,10);
 for(const level of levels){
   H.validateLevel(level); const s=C.create(level.board.width,level.board.height,level.board.initial);
   for(const p of level.referenceMoves){
@@ -17,4 +17,4 @@ for(const level of levels){
   const proof=H.solve(level); assert.equal(proof.minimum,level.maxMoves);
   console.log(`${level.id}: minimum=${proof.minimum}; visited=${proof.nodes}; reference and independent engine agree`);
 }
-console.log('6 levels verified; 0 failures');
+console.log('10 levels verified; 0 failures');

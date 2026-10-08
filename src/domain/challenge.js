@@ -5,7 +5,7 @@
 })(globalThis, function (C) {
   'use strict';
   function validateLevel(raw) {
-    if (!raw || raw.rules !== C.RULES || !/^[a-z0-9-]+$/.test(raw.id) || typeof raw.title !== 'string' ||
+    if (!raw || raw.rules !== C.RULES || typeof raw.id !== 'string' || !/^[a-z0-9-]+$/.test(raw.id) || typeof raw.title !== 'string' ||
       typeof raw.description !== 'string' || raw.grainPerMove !== 1 || raw.version !== 1) throw new Error('关卡格式错误');
     C.integer(raw.board.width, 1, 9, '关卡宽度'); C.integer(raw.board.height, 1, 9, '关卡高度');
     C.integer(raw.maxMoves, 1, 8, '关卡预算');
@@ -14,6 +14,9 @@
     if (!initial.stable || !target.stable) throw new Error('关卡初态和目标必须稳定');
     if (!Array.isArray(raw.allowedDropCells) || !raw.allowedDropCells.length || raw.allowedDropCells.length > 9) throw new Error('允许位置错误');
     const used = new Set();
+    if (raw.teaching && (!['intro','advanced'].includes(raw.teaching.tier) || typeof raw.teaching.concept !== 'string' ||
+      !raw.teaching.concept.trim() || !Array.isArray(raw.teaching.hints) || raw.teaching.hints.length !== 3 ||
+      raw.teaching.hints.some(v=>typeof v!=='string'||!v.trim()||v.length>500))) throw new Error('教学说明格式错误');
     for (const { x, y } of raw.allowedDropCells) {
       C.integer(x, 0, initial.width - 1, '横坐标'); C.integer(y, 0, initial.height - 1, '纵坐标');
       const key = `${x},${y}`; if (used.has(key)) throw new Error('重复允许位置'); used.add(key);

@@ -25,7 +25,7 @@ test('challenge checkpoint rolls back in-flight move, restore validates replay',
   C.stabilize(s.state);const save=H.checkpoint(s);assert.deepEqual(H.restore(levels[5],save),s);
   const bad=C.clone(save);bad.state.added++;assert.throws(()=>H.restore(levels[5],bad));
 });
-test('U20 six levels prove minimum by increasing depth; zero-step and budget failure handled',()=>{
+test('U20 ten levels prove minimum by increasing depth; zero-step and budget failure handled',()=>{
   for(const level of levels){const proof=H.solve(level);assert.equal(proof.minimum,level.maxMoves);assert.equal(H.solve(level,level.maxMoves-1).minimum,null);}
   const trivial=C.clone(levels[0]);trivial.board.target=trivial.board.initial.slice();assert.equal(H.solve(trivial).minimum,0);
   assert.throws(()=>H.solve(levels[4],2,1),/未证明/);

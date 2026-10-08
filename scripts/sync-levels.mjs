@@ -6,4 +6,4 @@ const output=`(function(root){\n  'use strict';\n  const levels = ${JSON.stringi
 const target=join(root,'src/domain/levels.js');
 if(process.argv.includes('--check')) { if(readFileSync(target,'utf8')!==output)throw new Error('关卡源与网页数据不同步'); }
 else writeFileSync(target,output);
-console.log('Six tutorial data records synchronized');
+console.log(`${json.length} lesson data records synchronized`);
