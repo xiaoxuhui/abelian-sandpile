@@ -1,8 +1,10 @@
 # 阿贝尔沙滩
 
-基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，当前 **v0.1.2 本地网页版**已可游玩。公开源码：[xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，MIT 许可。当前尚未创建发行标签或 GitHub Release。
+基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，当前 **v0.1.2** 包含网页和首个 Android 预发行。公开源码：[xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，MIT 许可。
 
 ## 开始游玩
+
+Android7.0+ 可从 [v0.1.2 预发行](https://github.com/xiaoxuhui/abelian-sandpile/releases/tag/v0.1.2) 下载 APK，使用已更新的系统 WebView。应用完全离线，无网络／存储权限；导出时在系统对话框选择保存位置。网页 ZIP 同页提供，校验和见 SHA256SUMS.txt。APK 与浏览器存档隔离，可用 JSON 导入／导出迁移。首包为固定公开 debug 签名，Android 真机和跨版本覆盖安装待补验。
 
 直接双击根目录 `index.html`，或构建后双击 `dist/index.html`，无需联网。推荐桌面 Chrome；移动浏览器触摸操作也已通过模拟验收。
 
@@ -27,6 +29,8 @@ node --test
 node scripts/sync-levels.mjs --check
 node scripts/verify-levels.mjs
 node scripts/build.mjs
+node scripts/sync-android-assets.mjs
+node scripts/sync-android-assets.mjs --check
 node scripts/serve.mjs
 ```
 
@@ -34,7 +38,7 @@ node scripts/serve.mjs
 
 浏览器验收：先构建，再执行 `node scripts/verify-browser.mjs`。开发环境需另行准备 Playwright 和 Chrome；通过 `PLAYWRIGHT_MODULE` 可指定已有模块绝对路径，`PLAYWRIGHT_CHANNEL` 默认 chrome。脚本自动临时启动本项目 4180 端口服务器；指定 `PREVIEW_URL` 可使用已有服务。工具及开发依赖不会进入游戏产物。循环／课堂验收分别执行 `node scripts/verify-repeat-browser.mjs`、`node scripts/verify-teaching-browser.mjs`，先启动预览服务，默认 4180，可用 `PREVIEW_URL` 指定。纯引擎性能参考执行 `node scripts/benchmark.mjs`。
 
-本版已通过 **39 项 Node 测试、10 关可达性/最少步数证明和 32 项真实 Chrome 浏览器操作验收**，截图和限制见[教学增强测试报告](doc/教学增强测试报告-v0.1.2.md)。历史记录见[循环投沙报告](doc/循环投沙测试报告-v0.1.1.md)及[首版报告](doc/第一版本测试报告.md)。移动触屏为浏览器模拟，Android 真机尚未验证。
+网页课堂已通过 **39 项 Node 测试、10 关证明和 32 项真实 Chrome 操作**。APK外壳加入14项结构检查后共 **53 项 Node 测试**；本次浏览器回归32项＋显式原生接口边界4项均通过（接口边界采用stub，不冒充Android运行）。最新APK静态／模拟器及发行核对见[安卓报告](doc/安卓发版核对报告-v0.1.2.md)；历史见[课堂报告](doc/教学增强测试报告-v0.1.2.md)、[循环报告](doc/循环投沙测试报告-v0.1.1.md)、[首版报告](doc/第一版本测试报告.md)。移动触屏为模拟，Android 真机尚未验证。
 
 ## 项目结构
 
@@ -45,6 +49,7 @@ src/controller.js 可取消调度、输入队列、模式协调
 src/renderer.js   Canvas 渲染和坐标命中
 src/teaching.js   课堂预测、分层提示和只读回放
 src/app.js        页面操作、保存、浏览器文件流程
+android/          独立离线外壳、固定debug签名和程序化图标
  data/challenges/ 正式十关及保留的历史草案示例
  tests/           独立参考引擎、领域/存档/控制器/工程测试
  scripts/         检查、证明、构建、本地预览和可选浏览器验收
@@ -60,6 +65,6 @@ src/app.js        页面操作、保存、浏览器文件流程
 
 **本项目只开发单个游戏。** 游戏资源使用相对路径及独立 `abelian-sandpile.` 存档键；候选合约 `game-hub.integration.json` 记录来源和资源。大厅扩展、注册、原生桥、合集构建及其它游戏回归由大厅项目负责，当前没有宣称已接入大厅。
 
-连续投沙和进阶课堂已按追加需求提前完成；v0.2.0 的其余规划为随机雨、缩放平移和图像导出。**v1.0.0 完成前只开发本地网页，之后再生成和发布 APK。**
+连续投沙和进阶课堂已按追加需求提前完成；v0.2.0 剩余随机雨、缩放平移和图像导出，v0.3.0 继续更多关卡及自定义关方向。**2026-10-09 新授权已提前到当前版本发布 APK，后续网页与安卓版本同线。** 此预发行不改变 v1.0 的稳定性验收门槛。
 
 许可：[MIT](LICENSE)。贡献与安全问题见 [CONTRIBUTING](CONTRIBUTING.md) 和 [SECURITY](SECURITY.md)。

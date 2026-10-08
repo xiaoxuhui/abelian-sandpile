@@ -1,0 +1,13 @@
+{
+  "binarySdk": {
+    "minSdkVersion": 24,
+    "targetSdkVersion": 34
+  },
+  "declaredPermissions": [
+    {
+      "name": "com.xiaoxuhui.abeliansandpile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+    }
+  ]
+}
+Web ZIP: 13 runtime files and asset manifest byte-identical
+Artifact ZIP SHA256: 75bb0e14516549afcae412188df83f5f79eb9bdcc5d7728ef421d2a221d19382

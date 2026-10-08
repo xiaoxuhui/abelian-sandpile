@@ -1,0 +1,2 @@
+823930ca2369ee0e8b4d15ab4a2f14e2d13a7ac29198a9ae697108f102631a49  abelian-sandpile-android-0.1.2-debug.apk
+4ad83edbef9388b6b84469181d314371ef70a40f2017054dab505541998ec4cb  abelian-sandpile-web-0.1.2.zip

@@ -1,0 +1,25 @@
+{
+  "apk": "abelian-sandpile-android-0.1.2-debug.apk",
+  "bytes": 2296876,
+  "sha256": "823930ca2369ee0e8b4d15ab4a2f14e2d13a7ac29198a9ae697108f102631a49",
+  "manifest": {
+    "versionCode": 1,
+    "versionName": "0.1.2",
+    "package": "com.xiaoxuhui.abeliansandpile"
+  },
+  "binaryProfile": {
+    "sdk": {
+      "minSdkVersion": 24,
+      "targetSdkVersion": 34
+    },
+    "systemPermissions": [],
+    "androidxSignatureGuard": "com.xiaoxuhui.abeliansandpile.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+    "guardProtectionLevel": 2
+  },
+  "webFilesMatched": 13,
+  "certificateDERByteMatch": true,
+  "certificateSha256": "e326c53f5843c42887cf6c5dac26b001cff3679245a8e51a0b288f2da3530d7a",
+  "certificateSubject": "C=CN,O=xiaoxuhui,CN=Abelian Sandpile Debug",
+  "certificateNotBefore": "2026-10-08T21:52:51+00:00",
+  "certificateNotAfter": "2056-09-30T21:52:51+00:00"
+}

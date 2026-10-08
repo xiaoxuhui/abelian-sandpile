@@ -1,0 +1,8 @@
+
+com.xiaoxuhui.abeliansandpile.OfflineGameTest:.
+
+Time: 8.594
+
+OK (1 test)
+
+
