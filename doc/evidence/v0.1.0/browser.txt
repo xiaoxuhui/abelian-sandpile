@@ -12,7 +12,7 @@ B10 actual JSON download, scoped clearing and confirmed round-trip import: PASS
 B11 malformed/future/oversized imports reject without state replacement; cancel preserves state: PASS
 B12 switching away pauses work and corrupt saved data is retained: PASS
 B13 storage write failure keeps memory playable and export available: PASS
-B14 real touch at 320px, corner/edge loss, rotation and larger font preserve board: PASS
+B14 real touch at 320px, corner/edge loss, rotation, larger font and long counters preserve board: PASS
 B15 hall-shaped subpath uses only local relative assets and remains playable: PASS
 B16 built file:// game works offline, including challenge and export: PASS
 16 passed; 0 failed; 0 page/console errors; 0 HTTP failures
