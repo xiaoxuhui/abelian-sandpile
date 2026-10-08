@@ -25,7 +25,7 @@
      document.querySelectorAll('[data-prediction]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.prediction===this.prediction)));
      $('prediction-feedback').textContent=this.feedback;
      $('hint-button').textContent=`展开提示 ${this.hintCount} / 3`;$('hint-button').disabled=this.hintCount>=3;
-     $('lesson-hints').replaceChildren();for(const text of (level.teaching?.hints||[]).slice(0,this.hintCount)){const li=document.createElement('li');li.textContent=text;$('lesson-hints').append(li);}
+     $('lesson-hints').textContent='';for(const text of (level.teaching?.hints||[]).slice(0,this.hintCount)){const li=document.createElement('li');li.textContent=text;$('lesson-hints').append(li);}
      $('lesson-empty').hidden=Boolean(this.trace);$('lesson-replay').hidden=!this.trace;if(!this.trace||!active)return;
      const t=this.trace,f=t.frames[this.index],last=t.frames.length-1;
      R.draw($('lesson-board'),f.state,null,[],f);

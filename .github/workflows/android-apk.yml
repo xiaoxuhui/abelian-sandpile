@@ -1,0 +1,113 @@
+name: Android APK
+on:
+  push:
+    branches: [main, "feat-*"]
+    tags: ["v*"]
+    paths: ["android/**", "src/**", "index.html", "LICENSE", "package.json", "scripts/**", ".github/workflows/**"]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install cryptography==46.0.3
+      - run: npm run sync:android && npm run check:android && node scripts/check.mjs && node --test && node scripts/verify-levels.mjs
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-34 build-tools;34.0.0'
+      - name: Build signed APK and test runner
+        working-directory: android
+        run: |
+          set -o pipefail
+          gradle assembleDebug assembleDebugAndroidTest lintDebug --no-daemon --stacktrace 2>&1 | tee "$RUNNER_TEMP/gradle-build.log"
+      - name: Expose compiler errors
+        if: failure()
+        run: |
+          if test -f "$RUNNER_TEMP/gradle-build.log"; then
+            grep -E '^e: |error:|FAILURE|What went wrong' "$RUNNER_TEMP/gradle-build.log" | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          fi
+      - name: Verify signature, version and content
+        run: |
+          mkdir -p release
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK" | tee release/apksigner.txt
+          python scripts/verify-apk.py "$APK" | tee release/apk-verification.json
+          cp "$APK" release/abelian-sandpile-android-0.1.2-debug.apk
+          python scripts/package-web.py release/abelian-sandpile-web-0.1.2.zip
+          cd release
+          sha256sum *.apk *.zip > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: abelian-sandpile-candidate
+          path: release/*
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: abelian-sandpile-instrumentation
+          path: android/app/build/outputs/apk/androidTest/debug/*.apk
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-build-reports
+          path: |
+            android/app/build/reports/**
+            ${{ runner.temp }}/gradle-build.log
+  emulator:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: abelian-sandpile-candidate
+          path: candidate
+      - uses: actions/download-artifact@v4
+        with:
+          name: abelian-sandpile-instrumentation
+          path: runner
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            mkdir -p evidence
+            adb shell svc wifi disable
+            adb shell svc data disable
+            adb install candidate/abelian-sandpile-android-0.1.2-debug.apk
+            adb install runner/app-debug-androidTest.apk
+            adb shell am instrument -w com.xiaoxuhui.abeliansandpile.test/androidx.test.runner.AndroidJUnitRunner | tee evidence/instrumentation.txt
+            grep -q 'OK (1 test)' evidence/instrumentation.txt
+            adb shell dumpsys webviewupdate > evidence/webview.txt
+            adb logcat -d > evidence/logcat.txt
+            adb shell am start -n com.xiaoxuhui.abeliansandpile/.MainActivity
+            sleep 3
+            adb exec-out screencap -p > evidence/android-launch.png
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android-emulator-evidence
+          path: evidence/*
