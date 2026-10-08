@@ -51,7 +51,7 @@ class OfflineGameTest {
             assertEquals("false",js(scenario,"SandpileApp.running"))
             js(scenario,"document.querySelector('[data-mode=challenge]').click(); document.getElementById('level').value='critical-ring'; document.getElementById('level').dispatchEvent(new Event('change')); document.getElementById('step-observe').checked=true;")
             // 真实Canvas事件，(2,3)第一次不崩塌，再投一次触发六波。
-            val drop = "(function(){var c=document.getElementById('main-board'),r=c.getBoundingClientRect();c.dispatchEvent(new PointerEvent('pointerdown',{clientX:r.left+r.width*2.5/7,clientY:r.top+r.height*3.5/7,bubbles:true}));})()"
+            val drop = "(function(){var c=document.getElementById('main-board'),r=c.getBoundingClientRect();c.dispatchEvent(new MouseEvent('click',{clientX:r.left+r.width*2.5/7,clientY:r.top+r.height*3.5/7,bubbles:true}));})()"
             js(scenario,drop);js(scenario,drop)
             assertEquals("6",js(scenario,"SandpileApp.lesson.waves"))
             assertEquals("14",js(scenario,"SandpileApp.lesson.topplings"))
