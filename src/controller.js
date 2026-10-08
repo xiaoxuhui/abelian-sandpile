@@ -12,6 +12,7 @@
       this.session = H.create(levels[0]); this.progress = {};
       this.settings = { mode: 'explore', speed: 20, amount: 1, levelId: levels[0].id };
       this.running = false; this.fast = false; this.generation = 0; this.handle = null; this.runner = null; this.lastWave = 0;
+      this.pouring = null; this.lastPour = 0;
     }
     get state() { return this.settings.mode === 'explore' ? this.experiment : this.session.state; }
     get status() { return this.settings.mode === 'challenge' ? H.status(this.session) : this.state.stable && !this.queue.length ? 'stable' : 'pending'; }
@@ -24,10 +25,20 @@
     stop() {
       this.generation++; if (this.handle !== null) this.cancel(this.handle);
       this.handle = null; this.running = false; this.runner = null; this.fast = false;
+      this.pouring = null;
     }
     pause() { this.stop(); this.changed(); }
-    run(fast = false) {
+    startPour(x, y, amount, interval = 500) {
+      if (this.settings.mode !== 'explore') throw new Error('循环投沙仅用于自由探索');
+      C.integer(x, 0, this.state.width - 1, '横坐标'); C.integer(y, 0, this.state.height - 1, '纵坐标');
+      C.integer(amount, 1, C.LIMITS.input, '投沙量'); C.integer(interval, 100, 5000, '循环间隔');
+      const pending = this.queue.reduce((n, p) => n + p.amount, 0);
+      if (this.state.initialTotal + this.state.added + pending + amount > C.LIMITS.grains) throw new Error('本局累计投入不足下一次投沙，请开始新实验');
+      this.run(true, Object.freeze({ x, y, amount, interval }));
+    }
+    run(fast = false, pouring = null) {
       this.stop(); this.running = true; this.fast = fast; this.lastWave = this.clock() - 1000;
+      this.pouring = pouring; this.lastPour = this.clock() - (pouring?.interval || 0);
       const generation = this.generation;
       const frame = () => {
         if (generation !== this.generation || !this.running) return;
@@ -36,6 +47,10 @@
           if (this.settings.mode === 'explore' && this.state.stable && this.queue.length) {
             const p = this.queue.shift(); C.drop(this.state, p.x, p.y, p.amount); this.runner = null;
           }
+          if (this.pouring && this.state.stable && !this.queue.length && this.clock() - this.lastPour >= this.pouring.interval) {
+            const p = this.pouring; C.drop(this.state, p.x, p.y, p.amount);
+            this.lastPour = this.clock(); this.runner = null;
+          }
           if (!this.state.stable) {
             if (this.fast) {
               if (!this.runner) this.runner = new C.Relaxer(this.state);
@@ -43,7 +58,7 @@
             } else if (this.clock() - this.lastWave >= 1000 / this.settings.speed) { C.wave(this.state); this.lastWave = this.clock(); }
           }
           this.changed();
-          if (this.state.stable && (this.settings.mode === 'challenge' || !this.queue.length)) { this.stop(); this.changed(); }
+          if (!this.pouring && this.state.stable && (this.settings.mode === 'challenge' || !this.queue.length)) { this.stop(); this.changed(); }
           else this.handle = this.schedule(frame);
         } catch (error) { this.stop(); this.onError?.(error); this.changed(); }
       };
