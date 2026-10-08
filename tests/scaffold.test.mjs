@@ -13,6 +13,9 @@ const example = JSON.parse(read('data/challenges/example.json'));
 test('S01 candidate static contract lists all shipped web resources', () => {
   assert.equal(contract.id, pkg.name);
   assert.equal(contract.version, pkg.version);
+  assert.equal(read('src/project-config.js').match(/version:\s*"([^"]+)"/)[1], pkg.version);
+  assert.equal(read('index.html').match(/<b data-version>([^<]+)<\/b>/)[1], pkg.version);
+  assert.ok(read('CHANGELOG.md').includes(`## ${pkg.version} —`));
   assert.equal(contract.entryPage, 'index.html');
   assert.equal(contract.buildKind, 'static');
   assert.deepEqual([...contract.files, contract.licenseFile], runtimeFiles);

@@ -4,7 +4,7 @@
 <title>阿贝尔沙滩 · 一粒沙的连锁反应</title><link rel="icon" href="data:,"><link rel="stylesheet" href="src/styles.css">
 <script src="src/project-config.js" defer></script><script src="src/domain/sandpile.js" defer></script><script src="src/domain/challenge.js" defer></script><script src="src/domain/levels.js" defer></script><script src="src/storage/persistence.js" defer></script><script src="src/controller.js" defer></script><script src="src/renderer.js" defer></script><script src="src/app.js" defer></script>
 </head><body><main>
-<header class="masthead"><a class="wordmark" href="#main-board">阿贝尔沙滩<span>ABELIAN SANDPILE</span></a><span class="version">本地网页版 <b data-version>0.1.0</b></span></header>
+<header class="masthead"><a class="wordmark" href="#main-board">阿贝尔沙滩<span>ABELIAN SANDPILE</span></a><span class="version">本地网页版 <b data-version>0.1.1</b></span></header>
 <section class="hero"><div><p class="eyebrow">一粒沙，一场连锁反应</p><h1>让简单规则，<br>长出复杂图案<span>。</span></h1></div><p class="rule-note">达到 <strong>4</strong> 粒时崩塌，<br>向上下左右各送出 <strong>1</strong> 粒。<br><span>越过边界的沙，会流出棋盘。</span></p></section>
 <div class="mode-buttons" role="group" aria-label="选择玩法"><button data-mode="explore" aria-pressed="true">01 自由探索</button><button data-mode="challenge" aria-pressed="false">02 教学挑战</button></div>
 <div id="message" class="message" role="status" aria-live="polite">点击棋盘投沙，或载入中心堆沙后点击“稳定化”。</div>
@@ -21,12 +21,13 @@
 <label>每次投入粒数<input id="amount" type="number" min="1" max="100000" step="1" value="1" inputmode="numeric"></label>
 <div class="amount-presets" role="group" aria-label="投沙量"><button data-amount="1">1</button><button data-amount="10">10</button><button data-amount="100">100</button><button data-amount="1000">1000</button></div>
 <div class="coordinates"><label>横坐标 x<input id="coord-x" type="number" min="0" value="32"></label><label>纵坐标 y<input id="coord-y" type="number" min="0" value="32"></label></div>
-<button id="drop-selected" class="wide primary">向选中格投沙</button><p class="control-note">小格不易触碰时，可用坐标或键盘精确投沙。坐标从 0 开始。</p>
+<button id="drop-selected" class="wide primary">向选中格投沙一次</button><p class="control-note">小格不易触碰时，可用坐标或键盘精确投沙。坐标从 0 开始。</p>
+<label>循环间隔（毫秒）<input id="pour-interval" type="number" min="100" max="5000" step="100" value="500" inputmode="numeric"></label><button id="repeat-drop" class="wide" aria-pressed="false">开始循环投沙</button><p id="pour-status" class="control-note" role="status">按上方坐标和粒数循环，自动稳定化。默认每半秒一次。</p>
 <label>实验预设<select id="preset"><option value="empty">空棋盘</option><option value="center">中心 4096 粒</option><option value="critical">满 3 粒后中心加一粒</option></select></label><button id="load-preset" class="wide">载入预设</button></section>
 <section id="challenge-tools" hidden><p class="eyebrow">六堂沙堆小课</p><label>选择关卡<select id="level"></select></label><p id="level-description"></p><div id="challenge-progress"></div><h3>目标图案</h3><canvas id="target-board" aria-label="关卡目标图案"></canvas><p id="challenge-result" role="status"></p><p class="control-note">白色虚线是允许位置。每次一粒，稳定后才能继续；可暂停观察。</p><button id="next-level" class="wide primary" hidden>下一关</button></section>
 <section><label>动画速度 <output id="speed-label">20 波/秒</output><input id="speed" type="range" min="1" max="60" value="20"></label><p class="control-note">单步是一轮同步波。稳定化使用快速计算，终态相同，随时可暂停。</p></section></aside></div>
 <section class="file-tools" aria-label="保存与恢复"><div><h2>保存这片沙滩</h2><p id="save-status">修改后自动保存在本机；恢复后保持暂停。</p></div><div class="file-buttons"><button id="export">导出 JSON</button><label class="file-button">导入 JSON<input id="import" type="file" accept=".json,application/json"></label><button id="clear-data" class="quiet">清除本游戏存档</button></div></section>
-<details class="help"><summary>玩法与规则</summary><p>自由探索中，点击棋盘或“向选中格投沙”增加粒数。先暂停观察，再单步或运行。不稳定时新投沙进入队列，稳定后按序执行。</p><p>挑战中只能向虚线格投一粒。全棋盘稳定后与目标完全一致才通关。最少步数已用逐层搜索验证，撤销不会取消历史完成记录。</p><p>一次基础崩塌减少四粒，向四方向各给一粒。边缘阈值也为四。总量＋流失＝初始总量＋投入。</p><p>本局初始＋累计投入上限 100 万粒；单次上限 10 万；导入上限 2MiB。重要实验请导出 JSON。当前版本只提供网页。</p></details>
+<details class="help"><summary>玩法与规则</summary><p>自由探索中，点击棋盘或“向选中格投沙一次”增加粒数。先暂停观察，再单步或运行。不稳定时新投沙进入队列，稳定后按序执行。</p><p>“开始循环投沙”锁定当时坐标和粒数，按间隔自动投沙并快速稳定化。雪崩未稳定时等待，不积压；点击停止或暂停即可停止。刷新、切模式、重置及页面隐藏也会停止，需手动再次开始。</p><p>挑战中只能向虚线格投一粒。全棋盘稳定后与目标完全一致才通关。最少步数已用逐层搜索验证，撤销不会取消历史完成记录。</p><p>一次基础崩塌减少四粒，向四方向各给一粒。边缘阈值也为四。总量＋流失＝初始总量＋投入。</p><p>本局初始＋累计投入上限 100 万粒；单次上限 10 万；导入上限 2MiB。重要实验请导出 JSON。当前版本只提供网页。</p></details>
 <footer><span>阿贝尔沙滩 · MIT · 离线运行</span><span>四邻接 / 开放边界</span></footer><noscript>请启用 JavaScript 运行游戏。</noscript></main>
 <dialog id="confirm-dialog"><h2>确认开始新的状态？</h2><p id="confirm-message"></p><div class="dialog-actions"><button id="cancel-action">取消</button><button id="confirm-action" class="primary">确认</button></div></dialog>
 </body></html>
