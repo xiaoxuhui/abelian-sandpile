@@ -1,54 +1,61 @@
 # 阿贝尔沙滩
 
-基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，计划同时提供自由探索和挑战关卡。
+基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，当前 **v0.1.0 本地网页版**已可游玩。公开源码：[xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，MIT 许可。当前尚未创建发行标签或 GitHub Release。
 
-当前为 **0.1.0-dev.0 项目骨架**，已完成调研与初版规划，尚无可玩的沙堆引擎或正式关卡。源码仓库为 [xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，按 MIT 许可公开，尚未发行正式版本。
+## 开始游玩
 
-## 阅读文档
+直接双击根目录 `index.html`，或构建后双击 `dist/index.html`，无需联网。推荐桌面 Chrome；移动浏览器触摸操作也已通过模拟验收。
 
-- [需求与测试用例](doc/需求与测试用例.md)：模型、探索模式、拟议关卡规则和验收矩阵。
-- [玩法调研](doc/玩法调研.md)：文献来源及产品推导。
-- [设计文档](doc/设计文档.md)：领域、渲染、存储、任务取消和资源边界。
-- [实施计划](doc/实施计划.md)：按 PENDING / COMPLETE / VERIFIED 记录真实进度。
-- [版本迭代规划](doc/版本迭代规划.md)：v0.1.0 首个可玩版本的范围、6 关教学目标、验证门槛与后续路线。
-- [游戏大厅接入规范](doc/游戏大厅接入规范.md)：现有宿主约束与第五来源所需改动。
-- [项目启动验证报告](doc/项目启动验证报告.md)：本次工程与浏览器检查证据。
+- **自由探索**：默认暂停，点击棋盘投沙；也可填写坐标和粒数，或用方向键选格、Enter/Space 投沙。棋盘提供 33/65/129 三档。
+- **观察雪崩**：单步处理一轮同步波；运行可调速度；稳定化快速计算并允许暂停。满 4 粒向四邻各送一粒，越界粒数流失，边角阈值仍为 4。
+- **实验预设**：空棋盘、中心 4096 粒、全盘 3 粒后中心加一粒。不稳定时新投沙排队，稳定后按序处理。
+- **教学挑战**：六关全部开放，点击虚线格投一粒。稳定后全棋盘与目标完全一致才通关；可重置、撤销，历史完成记录保留。
+- **保存实验**：修改后自动保存，刷新恢复保持暂停；导出/导入 JSON 可迁移数据。进行中挑战恢复到最近稳定动作之前。
 
-## 本地操作
+单次投沙上限 10 万粒，本局初始＋累计投入上限 100 万，队列最多 100 项，导入上限 2MiB。重要实验请导出备份；清除存档只影响本游戏。
 
-需要 Node.js >=20.19；无第三方依赖，不需要安装包。
+## 开发与验证
+
+需要 Node.js >=20.19.0；运行、构建与领域测试无第三方依赖，不需要安装包。
 
 ```sh
 node scripts/check.mjs
 node --test
+node scripts/sync-levels.mjs --check
+node scripts/verify-levels.mjs
 node scripts/build.mjs
 node scripts/serve.mjs
 ```
 
-构建生成 `dist/index.html` 和本地 CSS/JS，可直接双击打开。开发服务器默认 `http://127.0.0.1:4178/`，只监听本机。`http://127.0.0.1:4178/assets/games/abelian-sandpile/` 用于模拟大厅子路径；它不是 Android WebView 验证。
+预览服务器默认 `http://127.0.0.1:4178/`，仅监听本机。`/assets/games/abelian-sandpile/` 用于游戏端子路径检查。也可用对应的 npm scripts。
 
-若 npm 可用，也可执行 `npm test`、`npm run check`、`npm run build`、`npm run serve`。
+浏览器验收：先构建，再执行 `node scripts/verify-browser.mjs`。开发环境需另行准备 Playwright 和 Chrome；通过 `PLAYWRIGHT_MODULE` 可指定已有模块绝对路径，`PLAYWRIGHT_CHANNEL` 默认 chrome。脚本自动临时启动本项目 4180 端口服务器；指定 `PREVIEW_URL` 可使用已有服务。工具及开发依赖不会进入游戏产物。纯引擎性能参考执行 `node scripts/benchmark.mjs`。
 
-浏览器验证工具 `node scripts/verify-browser.mjs` 使用开发宿主已有的 Playwright 与 Chrome。可通过 `PLAYWRIGHT_MODULE` 指定宿主模块绝对路径；需先构建并启动预览。该可选工具不属于网页运行或构建依赖，不会进入 dist。
+本版已通过 **28 项 Node 测试、6 关可达性/最少步数证明和 16 项真实 Chrome 浏览器操作验收**，截图和限制见[第一版本测试报告](doc/第一版本测试报告.md)。移动触屏为浏览器模拟，Android 真机尚未验证。
 
 ## 项目结构
 
 ```text
-doc/               调研、需求、设计、计划与验证记录
-src/               当前占位页；预留 domain/ 与 storage/ 边界
-data/challenges/   未验证的关卡格式示例
-tests/             骨架、离线资源和构建合同测试
-scripts/           零依赖检查、构建与本地预览
-dist/              生成的离线静态产物（不提交）
-release/           后续发行产物占位（当前无发行文件）
+src/domain/       沙堆引擎、挑战规则、已同步的关卡数据
+src/storage/      严格存档校验和本地持久化
+src/controller.js 可取消调度、输入队列、模式协调
+src/renderer.js   Canvas 渲染和坐标命中
+src/app.js        页面操作、保存、浏览器文件流程
+ data/challenges/ 正式六关及保留的历史草案示例
+ tests/           独立参考引擎、领域/存档/控制器/工程测试
+ scripts/         检查、证明、构建、本地预览和可选浏览器验收
+ doc/             规划、来源、验证报告与证据
+ dist/            11 份运行资源及摘要清单（生成、不提交）
 ```
 
-## 开发与接入
+## 文档与工作边界
 
-沿用 EML 的 `build-tested-mini-app` 和 `plan-driven-frontend-dev`：先写需求/设计/计划，每个逻辑单元独立 commit；测试和真实浏览器交互证据齐全才标 VERIFIED。玩法阶段遵循参考引擎交叉验证和关卡穷举。
+[需求与测试用例](doc/需求与测试用例.md) · [设计文档](doc/设计文档.md) · [实施计划](doc/实施计划.md) · [版本规划](doc/版本迭代规划.md) · [关卡证明](doc/关卡验证报告.md) · [玩法调研](doc/玩法调研.md) · [大厅接入约束](doc/游戏大厅接入规范.md)。
 
-`game-hub.integration.json` 是候选合约，登记源仓库地址，但没有正式发行 SHA、宿主版本承诺或签名。现有大厅固定四来源，正式加入需要另行扩展宿主、注册图标/原生桥并回归全部游戏。占位页面不访问存储；未来仅使用 `abelian-sandpile.` 前缀，不清空共享 origin 数据。
+沿用 EML 的 build-tested-mini-app / plan-driven-frontend-dev：先规划，每个逻辑单元独立提交推送，以真实证据更新 VERIFIED。
 
-**工作边界：本项目/本窗口只开发单个游戏。** 大厅扩展、注册、宿主原生桥、合集 APK 构建与其它游戏回归由大厅项目负责，不列入本游戏实施计划。
+**本项目只开发单个游戏。** 游戏资源使用相对路径及独立 `abelian-sandpile.` 存档键；候选合约 `game-hub.integration.json` 记录来源和资源。大厅扩展、注册、原生桥、合集构建及其它游戏回归由大厅项目负责，当前没有宣称已接入大厅。
+
+下一版 v0.2.0 规划连续投沙、随机雨、缩放平移和图像导出。**v1.0.0 完成前只开发本地网页，之后再生成和发布 APK。**
 
 许可：[MIT](LICENSE)。贡献与安全问题见 [CONTRIBUTING](CONTRIBUTING.md) 和 [SECURITY](SECURITY.md)。
