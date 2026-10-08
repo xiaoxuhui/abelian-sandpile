@@ -1,12 +1,13 @@
 # 阿贝尔沙滩
 
-基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，当前 **v0.1.0 本地网页版**已可游玩。公开源码：[xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，MIT 许可。当前尚未创建发行标签或 GitHub Release。
+基于 **Abelian sandpile（阿贝尔沙堆）** 的离线数学小游戏，当前 **v0.1.1 本地网页版**已可游玩。公开源码：[xiaoxuhui/abelian-sandpile](https://github.com/xiaoxuhui/abelian-sandpile)，MIT 许可。当前尚未创建发行标签或 GitHub Release。
 
 ## 开始游玩
 
 直接双击根目录 `index.html`，或构建后双击 `dist/index.html`，无需联网。推荐桌面 Chrome；移动浏览器触摸操作也已通过模拟验收。
 
 - **自由探索**：默认暂停，点击棋盘投沙；也可填写坐标和粒数，或用方向键选格、Enter/Space 投沙。棋盘提供 33/65/129 三档。
+- **循环投沙**：单次按钮旁点击“开始循环投沙”，按所选坐标和粒数自动循环并处理崩塌；默认半秒一次，可设 100..5000ms。点击停止或暂停结束；刷新/重置/切模式也会停止。
 - **观察雪崩**：单步处理一轮同步波；运行可调速度；稳定化快速计算并允许暂停。满 4 粒向四邻各送一粒，越界粒数流失，边角阈值仍为 4。
 - **实验预设**：空棋盘、中心 4096 粒、全盘 3 粒后中心加一粒。不稳定时新投沙排队，稳定后按序处理。
 - **教学挑战**：六关全部开放，点击虚线格投一粒。稳定后全棋盘与目标完全一致才通关；可重置、撤销，历史完成记录保留。
@@ -29,9 +30,9 @@ node scripts/serve.mjs
 
 预览服务器默认 `http://127.0.0.1:4178/`，仅监听本机。`/assets/games/abelian-sandpile/` 用于游戏端子路径检查。也可用对应的 npm scripts。
 
-浏览器验收：先构建，再执行 `node scripts/verify-browser.mjs`。开发环境需另行准备 Playwright 和 Chrome；通过 `PLAYWRIGHT_MODULE` 可指定已有模块绝对路径，`PLAYWRIGHT_CHANNEL` 默认 chrome。脚本自动临时启动本项目 4180 端口服务器；指定 `PREVIEW_URL` 可使用已有服务。工具及开发依赖不会进入游戏产物。纯引擎性能参考执行 `node scripts/benchmark.mjs`。
+浏览器验收：先构建，再执行 `node scripts/verify-browser.mjs`。开发环境需另行准备 Playwright 和 Chrome；通过 `PLAYWRIGHT_MODULE` 可指定已有模块绝对路径，`PLAYWRIGHT_CHANNEL` 默认 chrome。脚本自动临时启动本项目 4180 端口服务器；指定 `PREVIEW_URL` 可使用已有服务。工具及开发依赖不会进入游戏产物。循环验收执行 `node scripts/verify-repeat-browser.mjs`，先启动预览服务，默认 4180，可用 `PREVIEW_URL` 指定。纯引擎性能参考执行 `node scripts/benchmark.mjs`。
 
-本版已通过 **28 项 Node 测试、6 关可达性/最少步数证明和 16 项真实 Chrome 浏览器操作验收**，截图和限制见[第一版本测试报告](doc/第一版本测试报告.md)。移动触屏为浏览器模拟，Android 真机尚未验证。
+本版已通过 **34 项 Node 测试、6 关可达性/最少步数证明和 24 项真实 Chrome 浏览器操作验收**，截图和限制见[循环投沙测试报告](doc/循环投沙测试报告-v0.1.1.md)及[首版报告](doc/第一版本测试报告.md)。移动触屏为浏览器模拟，Android 真机尚未验证。
 
 ## 项目结构
 
@@ -56,6 +57,6 @@ src/app.js        页面操作、保存、浏览器文件流程
 
 **本项目只开发单个游戏。** 游戏资源使用相对路径及独立 `abelian-sandpile.` 存档键；候选合约 `game-hub.integration.json` 记录来源和资源。大厅扩展、注册、原生桥、合集构建及其它游戏回归由大厅项目负责，当前没有宣称已接入大厅。
 
-下一版 v0.2.0 规划连续投沙、随机雨、缩放平移和图像导出。**v1.0.0 完成前只开发本地网页，之后再生成和发布 APK。**
+连续投沙已按追加需求提前完成；v0.2.0 的其余规划为随机雨、缩放平移和图像导出。**v1.0.0 完成前只开发本地网页，之后再生成和发布 APK。**
 
 许可：[MIT](LICENSE)。贡献与安全问题见 [CONTRIBUTING](CONTRIBUTING.md) 和 [SECURITY](SECURITY.md)。
