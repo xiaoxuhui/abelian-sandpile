@@ -16,3 +16,4 @@
 - 存储只用 `abelian-sandpile.` 前缀，禁止 localStorage.clear()/sessionStorage.clear()；导入失败不替换原数据。
 - 本地版本、源 SHA、存档合同和宿主协议分开记录；草案/已实现/已发行状态不能混用。
 - 授权记录：2026-10-08 用户授权骨架与规划，并随后明确要求直接创建远程仓库、提交和推送。当前仓库 xiaoxuhui/abelian-sandpile；按相同 Skill，每个切片提交后推送并用 ls-remote 核对。完整游戏实现、标签、Release 和独立 APK 仍按后续明确授权处理。
+- 最新授权：用户已确认启动 v0.1.0，完成本地网页版开发与验证。v0.1.0 至 v1.0.0 期间不生成 APK；v1.0.0 完成后再安排 APK 生成与发布。当前不打发行标签或创建 Release，不修改大厅。
