@@ -7,6 +7,7 @@ release/*
 *.log
 *.apk
 *.keystore
+!android/app/debug.keystore
 *.jks
 .env
 .env.*

@@ -1,0 +1,11 @@
+Chrome 154.0.8037.98; real DOM/canvas; mobile simulated touch
+T01 grouped ten lessons and optional prediction preserve original input flow: PASS
+T02 wrong prediction, paused physical move and read-only wave replay: PASS
+T03 undo/reset/level change clear stale observations and correct prediction works: PASS
+T04 hints are progressive and final distribution is only revealed on request: PASS
+T05 advanced critical ring exposes six waves and fourteen basic topplings: PASS
+T06 old save-v1 imports exactly; refresh keeps progress and no classroom state: PASS
+T07 320px touch replay and hints stay readable and never modify physical state: PASS
+T08 subpath and completely offline built file include teaching assets: PASS
+8 passed; 0 failed; 0 page/console/HTTP errors
+v0.1.2 web only; Android/hall not verified.

@@ -17,6 +17,9 @@
     "verify:levels": "node scripts/verify-levels.mjs",
     "test:browser": "node scripts/verify-browser.mjs",
     "test:repeat-browser": "node scripts/verify-repeat-browser.mjs",
-    "test:teaching-browser": "node scripts/verify-teaching-browser.mjs"
+    "test:teaching-browser": "node scripts/verify-teaching-browser.mjs",
+    "sync:android": "node scripts/build.mjs && node scripts/sync-android-assets.mjs",
+    "check:android": "node scripts/sync-android-assets.mjs --check",
+    "test:android": "node --test tests/android-shell.test.mjs"
   }
 }

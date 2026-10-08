@@ -1,0 +1,7 @@
+Chrome 154.0.8037.98; real DOM with explicit native-interface stub (not Android runtime)
+N01 native boundary receives exact save-v1 and pauses loop: PASS
+N02 native cancellation feedback is truthful: PASS
+N03 native failure feedback preserves board: PASS
+N04 bridge exception is visible and game data unchanged: PASS
+4 passed; 0 failed; 0 page/console errors
+Actual browser Blob download and import covered by B10/B11.

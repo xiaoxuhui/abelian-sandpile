@@ -6,7 +6,7 @@ import {pathToFileURL} from 'node:url';
 import {root} from './build.mjs';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGHT_CHANNEL||'chrome'}),context=await browser.newContext({viewport:{width:1280,height:1000}}),page=await context.newPage();
-const base=process.env.PREVIEW_URL||'http://127.0.0.1:4180',evidence=join(root,'doc/evidence/v0.1.2');mkdirSync(evidence,{recursive:true});
+const base=process.env.PREVIEW_URL||'http://127.0.0.1:4180',evidence=join(root,process.env.BROWSER_EVIDENCE_DIR||'doc/evidence/v0.1.2');mkdirSync(evidence,{recursive:true});
 const results=[],errors=[];const fixture=JSON.parse(readFileSync(join(root,'tests/fixtures/v0.1.1-save.json'),'utf8'));
 function observe(p){p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')errors.push(m.text());});p.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});}
 observe(page);

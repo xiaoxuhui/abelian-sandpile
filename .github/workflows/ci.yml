@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: node scripts/check.mjs
+      - run: npm run sync:android
+      - run: npm run check:android
       - run: node --test
       - run: node scripts/sync-levels.mjs --check
       - run: node scripts/verify-levels.mjs

@@ -1,0 +1,8 @@
+阿贝尔沙滩 Android v0.1.2 第三方声明
+Android外壳和工具沿用xiaoxuhui/mini-app-harness技能模板；网页为本项目MIT源码。
+AndroidX core-ktx 1.13.1、activity-ktx 1.9.2、webkit 1.11.0及其AndroidX传递库：The Android Open Source Project，Apache License 2.0。
+Kotlin标准库1.9.24及传递Kotlin运行库：JetBrains，Apache License 2.0。
+完整Apache2.0许可证随APK的res/raw/apache_2_0.txt分发。本文件为res/raw/third_party_notices.txt。
+Gradle8.7/AGP8.5.2及Kotlin构建插件只用于构建，不作为Web运行库。Gradle wrapper随源码提供，Apache2.0许可证如上。
+安卓测试使用AndroidX Test runner/JUnit扩展及JUnit，只在测试APK中运行，不随用户APK发行。
+图标为本项目程序化Pillow绘制；Pillow及Playwright/Chrome仅用于开发，不随APK分发。
