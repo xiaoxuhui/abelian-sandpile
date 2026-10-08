@@ -22,7 +22,8 @@ test('S01 candidate static contract lists all shipped web resources', () => {
 });
 
 test('S02 page resource references resolve in a nested game directory', () => {
-  const references = [...read('index.html').matchAll(/\b(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
+  const references = [...read('index.html').matchAll(/\b(?:src|href)="([^"]+)"/g)]
+    .map((match) => match[1]).filter((reference) => !reference.startsWith('data:'));
   assert.equal(references.length, 3);
   for (const reference of references) {
     const url = new URL(reference, 'https://appassets.androidplatform.net/assets/games/abelian-sandpile/index.html');
