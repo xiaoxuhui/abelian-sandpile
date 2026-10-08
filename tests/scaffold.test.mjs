@@ -17,7 +17,8 @@ test('S01 candidate static contract lists all shipped web resources', () => {
   assert.equal(contract.buildKind, 'static');
   assert.deepEqual([...contract.files, contract.licenseFile], runtimeFiles);
   assert.equal(contract.status, 'candidate-host-extension-required');
-  assert.equal(contract.repository, null);
+  assert.equal(contract.repository, pkg.repository.url);
+  assert.match(contract.repository, /^https:\/\/github\.com\/[A-Za-z0-9-]+\/[A-Za-z0-9_.-]+\.git$/);
   assert.equal(contract.hostCompatibility, null);
 });
 

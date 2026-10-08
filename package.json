@@ -5,6 +5,9 @@
   "description": "阿贝尔沙滩：离线阿贝尔沙堆探索与挑战小游戏（项目骨架）",
   "license": "MIT",
   "author": "xiaoxuhui",
+  "repository": { "type": "git", "url": "https://github.com/xiaoxuhui/abelian-sandpile.git" },
+  "homepage": "https://github.com/xiaoxuhui/abelian-sandpile#readme",
+  "bugs": { "url": "https://github.com/xiaoxuhui/abelian-sandpile/issues" },
   "engines": { "node": ">=20.19.0" },
   "scripts": {
     "test": "node --test",

@@ -10,7 +10,7 @@ import { root } from './build.mjs';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const browser = await chromium.launch({ headless: true, channel: 'chrome' });
-const evidence = join(root, 'doc/evidence/project-start');
+const evidence = join(root, process.env.BROWSER_EVIDENCE_DIR || 'doc/evidence/project-start');
 mkdirSync(evidence, { recursive: true });
 const results = [];
 const errors = [];

@@ -1,0 +1,17 @@
+Checked 7 JavaScript files and 11 required documents; plan schema valid
+✔ S01 candidate static contract lists all shipped web resources (0.9857ms)
+✔ S02 page resource references resolve in a nested game directory (0.6156ms)
+✔ S03 runtime has no external dependencies or storage mutation (1.0755ms)
+✔ S04 reserved storage keys are unique and game-scoped (0.1113ms)
+✔ S05 challenge example is a stable format draft, not a verified level (0.1899ms)
+✔ S06 build emits exact bytes and auditable resource hashes (13.0711ms)
+✔ S07 two builds are byte-for-byte reproducible and exclude development files (20.4197ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 141.3741
+Built 5 files in dist; abelian-sandpile 0.1.0-dev.0 (scaffold)

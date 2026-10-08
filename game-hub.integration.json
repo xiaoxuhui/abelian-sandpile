@@ -4,7 +4,7 @@
   "id": "abelian-sandpile",
   "displayName": "阿贝尔沙滩",
   "version": "0.1.0-dev.0",
-  "repository": null,
+  "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
   "revision": null,
   "buildKind": "static",
   "entryPage": "index.html",
