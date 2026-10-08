@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "status": "candidate-host-extension-required",
+  "id": "abelian-sandpile",
+  "displayName": "阿贝尔沙滩",
+  "version": "0.1.0-dev.0",
+  "repository": null,
+  "revision": null,
+  "buildKind": "static",
+  "entryPage": "index.html",
+  "files": ["index.html", "src/styles.css", "src/project-config.js", "src/app.js"],
+  "licenseFile": "LICENSE",
+  "storageKeys": [
+    "abelian-sandpile.experiment.v1",
+    "abelian-sandpile.progress.v1",
+    "abelian-sandpile.settings.v1"
+  ],
+  "storageContractDraft": "abelian-sandpile-save-v1",
+  "hostCompatibility": null,
+  "nativeBridge": null,
+  "notes": "本地候选合约，不是现有 sources.lock.json 条目或签名资源目录；存档和原生桥尚未实现。"
+}

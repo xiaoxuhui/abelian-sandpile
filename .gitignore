@@ -1,0 +1,12 @@
+node_modules/
+dist/*
+!dist/.gitkeep
+release/*
+!release/.gitkeep
+.build/
+*.log
+*.apk
+*.keystore
+*.jks
+.env
+.env.*

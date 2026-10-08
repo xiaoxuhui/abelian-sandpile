@@ -1,0 +1,15 @@
+{
+  "name": "abelian-sandpile",
+  "version": "0.1.0-dev.0",
+  "private": true,
+  "description": "阿贝尔沙滩：离线阿贝尔沙堆探索与挑战小游戏（项目骨架）",
+  "license": "MIT",
+  "author": "xiaoxuhui",
+  "engines": { "node": ">=20.19.0" },
+  "scripts": {
+    "test": "node --test",
+    "check": "node scripts/check.mjs",
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs"
+  }
+}

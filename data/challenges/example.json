@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "gameId": "abelian-sandpile",
+  "status": "draft",
+  "id": "intro-cross",
+  "version": 1,
+  "title": "一粒沙的十字",
+  "description": "拟议格式示例：向中心加一粒，观察四邻接崩塌。尚未交付正式关卡。",
+  "rules": "square4-open-v1",
+  "board": {
+    "width": 3,
+    "height": 3,
+    "initial": [0, 0, 0, 0, 3, 0, 0, 0, 0],
+    "target": [0, 1, 0, 1, 0, 1, 0, 1, 0]
+  },
+  "allowedDropCells": [{ "x": 1, "y": 1 }],
+  "grainPerMove": 1,
+  "maxMoves": 1,
+  "referenceMoves": [{ "x": 1, "y": 1 }],
+  "proofStatus": "unverified"
+}
