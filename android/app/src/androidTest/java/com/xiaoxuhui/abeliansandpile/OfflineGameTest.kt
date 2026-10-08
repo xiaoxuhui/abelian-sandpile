@@ -1,6 +1,7 @@
 package com.xiaoxuhui.abeliansandpile
 
 import android.webkit.WebView
+import android.content.pm.ActivityInfo
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -57,6 +58,12 @@ class OfflineGameTest {
             assertEquals("14",js(scenario,"SandpileApp.lesson.topplings"))
             val physical=js(scenario,"JSON.stringify(SandpileApp.board)")
             js(scenario,"document.getElementById('replay-next').click()")
+            assertEquals(physical,js(scenario,"JSON.stringify(SandpileApp.board)"))
+            scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+            Thread.sleep(1000)
+            assertEquals(physical,js(scenario,"JSON.stringify(SandpileApp.board)"))
+            scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+            Thread.sleep(1000)
             assertEquals(physical,js(scenario,"JSON.stringify(SandpileApp.board)"))
             assertTrue(js(scenario,"document.getElementById('lesson-panel').hidden===false")=="true")
         }

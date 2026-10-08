@@ -1,0 +1,11 @@
+intro-cross: minimum=1; visited=2; reference and independent engine agree
+chain: minimum=1; visited=2; reference and independent engine agree
+corner: minimum=1; visited=2; reference and independent engine agree
+edge: minimum=1; visited=2; reference and independent engine agree
+choose: minimum=2; visited=10; reference and independent engine agree
+combine: minimum=2; visited=10; reference and independent engine agree
+bridge: minimum=4; visited=70; reference and independent engine agree
+crossroad: minimum=5; visited=252; reference and independent engine agree
+shore: minimum=5; visited=126; reference and independent engine agree
+critical-ring: minimum=6; visited=462; reference and independent engine agree
+10 levels verified; 0 failures

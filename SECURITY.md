@@ -1,7 +1,9 @@
 # 安全问题
 
-当前为 v0.1.0 本地网页版开发交付，尚无正式 Release 或长期维护版本承诺。公开源码仓库为 xiaoxuhui/abelian-sandpile。
+当前为 v0.1.2 网页与首个Android预发行，尚无长期维护版本承诺。公开源码仓库为 xiaoxuhui/abelian-sandpile。
 
 游戏不需要账户、token 或联网服务。JSON 存档上限 2MiB，严格校验版本、规则、数值、账本、队列、关卡和历史；导入不执行代码，文本不用 innerHTML。清除只操作本游戏三个键。
 
 本地存档及导出文件可能包含玩家实验和进度；公开反馈前请移除个人数据、token 和签名材料。可向维护者私下反馈安全问题；尚未设置专用邮箱或 GitHub private reporting，不能声称这些通道已启用。请勿在公开问题中包含可直接利用的漏洞细节。
+
+维护者联系邮箱：xixuui@qq.com（仓库Git作者联系方式）。Android APK无网络／存储权限，固定本地HTTPS origin；文件导入／导出由用户在系统对话框选位置。仓库内debug.keystore是技能要求的公开开发签名，密码android；仅用于此预发行，不是保密生产密钥，避免用于需要可信发行身份的场景。
