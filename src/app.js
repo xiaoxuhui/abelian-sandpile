@@ -47,6 +47,7 @@ board.onclick=e=>{const p=R.hit(board,ctrl.state,e.clientX,e.clientY);if(p){boar
 board.onkeydown=e=>{const p=selected(),keys={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(keys[e.key]){e.preventDefault();p.x=Math.max(0,Math.min(ctrl.state.width-1,p.x+keys[e.key][0]));p.y=Math.max(0,Math.min(ctrl.state.height-1,p.y+keys[e.key][1]));ctrl.changed();}else if(e.key==='Enter'||e.key===' '){e.preventDefault();drop({...p});}};
 $('drop-selected').onclick=()=>safely(()=>{const x=Number($('coord-x').value),y=Number($('coord-y').value);C.integer(x,0,ctrl.experiment.width-1,'横坐标');C.integer(y,0,ctrl.experiment.height-1,'纵坐标');drop({x,y});});
 $('amount').onchange=()=>safely(()=>{amount();ctrl.changed();});
+for(const axis of ['x','y'])$('coord-'+axis).onchange=()=>safely(()=>{const n=Number($('coord-'+axis).value);C.integer(n,0,ctrl.experiment.width-1,'坐标');ctrl.selected[axis]=n;ctrl.changed();});
 document.querySelectorAll('[data-amount]').forEach(b=>b.onclick=()=>{ctrl.settings.amount=Number(b.dataset.amount);$('amount').value=String(ctrl.settings.amount);ctrl.changed();});
 $('size').onchange=()=>replace(Number($('size').value),'empty');$('load-preset').onclick=()=>replace(ctrl.experiment.width,$('preset').value);
 $('run').onclick=()=>safely(()=>ctrl.running?ctrl.pause():ctrl.run());$('step').onclick=()=>safely(()=>ctrl.step());$('stabilize').onclick=()=>safely(()=>ctrl.run(true));

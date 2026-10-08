@@ -1,0 +1,6 @@
+{"size":33,"preset":"center","milliseconds":21,"batches":15,"operations":143063,"topplings":249228,"lost":1812,"stable":true}
+{"size":33,"preset":"critical","milliseconds":0,"batches":1,"operations":6545,"topplings":6545,"lost":132,"stable":true}
+{"size":65,"preset":"center","milliseconds":8,"batches":21,"operations":205805,"topplings":312768,"lost":0,"stable":true}
+{"size":65,"preset":"critical","milliseconds":1,"batches":5,"operations":47905,"topplings":47905,"lost":260,"stable":true}
+{"size":129,"preset":"center","milliseconds":8,"batches":21,"operations":205805,"topplings":312768,"lost":0,"stable":true}
+{"size":129,"preset":"critical","milliseconds":7,"batches":37,"operations":366145,"topplings":366145,"lost":516,"stable":true}

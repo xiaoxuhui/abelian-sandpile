@@ -13,8 +13,9 @@
   const sum = (values) => values.reduce((a, b) => a + b, 0);
   const clone = (state) => JSON.parse(JSON.stringify(state));
   function isStable(state) { return state.cells.every((value) => value < 4); }
-  function create(width, height, cells = Array(width * height).fill(0)) {
+  function create(width, height, cells) {
     integer(width, 1, LIMITS.size, '宽度'); integer(height, 1, LIMITS.size, '高度');
+    if (cells === undefined) cells = Array(width * height).fill(0);
     if (!Array.isArray(cells) || cells.length !== width * height) throw new Error('棋盘长度错误');
     cells.forEach((value) => integer(value, 0, LIMITS.grains, '粒数'));
     const total = integer(sum(cells), 0, LIMITS.grains, '总粒数');

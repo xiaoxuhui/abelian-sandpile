@@ -6,7 +6,7 @@
 })(globalThis, function (C, H) {
   'use strict';
   class Controller {
-    constructor(levels, { schedule = (fn) => setTimeout(fn, 16), cancel = clearTimeout, clock = () => performance.now(), onChange = () => {} } = {}) {
+    constructor(levels, { schedule = (fn) => setTimeout(fn, 16), cancel = (id) => clearTimeout(id), clock = () => performance.now(), onChange = () => {} } = {}) {
       this.levels = levels; this.schedule = schedule; this.cancel = cancel; this.clock = clock; this.onChange = onChange;
       this.experiment = C.preset(65, 'empty'); this.queue = []; this.selected = { x: 32, y: 32 };
       this.session = H.create(levels[0]); this.progress = {};

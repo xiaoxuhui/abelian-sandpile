@@ -1,0 +1,19 @@
+Browser: 154.0.8037.98 (Chrome headless; real DOM/canvas/touch/download)
+B01 fresh desktop startup and responsive layout: PASS
+B02 coordinate selection survives amount edit; one synchronous wave: PASS
+B03 keyboard selection, Enter/Space input and atomic numeric rejection: PASS
+B04 resize confirmation cancellation preserves experiment: PASS
+B05 center preset fast stabilization, queue, mode preservation: PASS
+B06 129 board computation remains cancellable, late callbacks cannot overwrite reset: PASS
+B07 six tutorials win through real canvas clicks and verified paths: PASS
+B08 undo keeps historical best; forbidden cells do not consume moves; final-budget failure: PASS
+B09 pending experiment and queue restore paused after refresh: PASS
+B10 actual JSON download, scoped clearing and confirmed round-trip import: PASS
+B11 malformed/future/oversized imports reject without state replacement; cancel preserves state: PASS
+B12 switching away pauses work and corrupt saved data is retained: PASS
+B13 storage write failure keeps memory playable and export available: PASS
+B14 real touch at 320px, corner/edge loss, rotation and larger font preserve board: PASS
+B15 hall-shaped subpath uses only local relative assets and remains playable: PASS
+B16 built file:// game works offline, including challenge and export: PASS
+16 passed; 0 failed; 0 page/console errors; 0 HTTP failures
+Scope: local web v0.1.0 and game-side subpath; no Android WebView or host integration verified.

@@ -45,6 +45,7 @@ test('U12 invalid inputs and cumulative budget reject atomically', () => {
     assert.throws(()=>C.drop(s,...args)); assert.deepEqual(s,old);
   }
   assert.throws(()=>C.create(130,3)); assert.throws(()=>C.create(3,3,[1]));
+  assert.throws(()=>C.create(1e9,1e9), /宽度/);
   const full=C.create(1,1,[1000000]); assert.throws(()=>C.drop(full,0,0,1));
 });
 test('validated snapshots check ledger, stability and per-cell toppling counters', () => {

@@ -1,92 +1,52 @@
 import assert from 'node:assert/strict';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { spawn } from 'node:child_process';
+import { setTimeout as delay } from 'node:timers/promises';
 import { root } from './build.mjs';
-
-// Optional verification tool. Playwright is supplied by the development host,
-// never bundled with the game and never required for its runtime/build.
-const require = createRequire(import.meta.url);
-const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const browser = await chromium.launch({ headless: true, channel: 'chrome' });
-const evidence = join(root, process.env.BROWSER_EVIDENCE_DIR || 'doc/evidence/project-start');
-mkdirSync(evidence, { recursive: true });
-const results = [];
-const errors = [];
-const failedResponses = [];
-const base = process.env.PREVIEW_URL || 'http://127.0.0.1:4178';
-const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
-const page = await context.newPage();
-page.on('pageerror', (error) => errors.push(error.message));
-page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-page.on('response', (response) => { if (response.status() >= 400) failedResponses.push(`${response.status()} ${response.url()}`); });
-async function check(name, action) { await action(); results.push(`${name}: PASS`); }
-async function ready() { await page.waitForSelector('html[data-ready="true"]'); }
-async function visible(selector) { assert.equal(await page.locator(selector).isVisible(), true, selector); }
-async function noOverflow() {
-  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'Horizontal overflow');
-}
-
-try {
-  await check('B01 desktop root startup and layout (1280x900)', async () => {
-    assert.equal((await page.goto(base + '/')).status(), 200);
-    await ready();
-    await visible('#explore-panel');
-    assert.equal(await page.locator('#challenge-panel').isVisible(), false);
-    await noOverflow();
-  });
-  await check('B02 click both mode explanations and preserve pressed state', async () => {
-    await page.getByRole('button', { name: '02 挑战关卡' }).click();
-    await visible('#challenge-panel');
-    assert.equal(await page.locator('[data-mode="challenge"]').getAttribute('aria-pressed'), 'true');
-    assert.equal(await page.locator('#explore-panel').isVisible(), false);
-    await page.screenshot({ path: join(evidence, 'desktop.png'), fullPage: true });
-    await page.getByRole('button', { name: '01 自由探索' }).click();
-    await visible('#explore-panel');
-  });
-  await check('B03 Enter and Space keyboard activation', async () => {
-    await page.locator('[data-mode="challenge"]').focus();
-    await page.keyboard.press('Enter');
-    await visible('#challenge-panel');
-    await page.locator('[data-mode="explore"]').focus();
-    await page.keyboard.press('Space');
-    await visible('#explore-panel');
-  });
-  await check('B04 mobile viewport switches both modes without overflow (320x740)', async () => {
-    await page.setViewportSize({ width: 320, height: 740 });
-    await page.getByRole('button', { name: '02 挑战关卡' }).click();
-    await visible('#challenge-panel');
-    await noOverflow();
-    await page.screenshot({ path: join(evidence, 'mobile.png'), fullPage: true });
-    await page.getByRole('button', { name: '01 自由探索' }).click();
-    await visible('#explore-panel');
-    await noOverflow();
-  });
-  await check('B05 hall-shaped subpath loads local resources and interaction', async () => {
-    await page.setViewportSize({ width: 1280, height: 900 });
-    assert.equal((await page.goto(base + '/assets/games/abelian-sandpile/')).status(), 200);
-    await ready();
-    await page.getByRole('button', { name: '02 挑战关卡' }).click();
-    await visible('#challenge-panel');
-    const resources = await page.evaluate(() => performance.getEntriesByType('resource').map((item) => item.name));
-    assert.equal(resources.filter((url) => /\.(?:css|js)$/.test(url)).length, 3);
-    for (const url of resources.filter((value) => /\.(?:css|js)$/.test(value))) assert.ok(url.includes('/assets/games/abelian-sandpile/'));
-  });
-  await check('B06 built file opens and switches modes while offline', async () => {
-    await context.setOffline(true);
-    await page.goto(pathToFileURL(join(root, 'dist/index.html')).href);
-    await ready();
-    await page.getByRole('button', { name: '02 挑战关卡' }).click();
-    await visible('#challenge-panel');
-    await noOverflow();
-  });
-  assert.deepEqual(errors, [], 'Browser errors');
-  assert.deepEqual(failedResponses, [], 'HTTP failures');
-  const report = [`Browser: ${browser.version()} (Chrome, headless, fresh context)`, ...results,
-    `${results.length} passed; 0 failed; 0 page/console errors; 0 HTTP failures`,
-    'Scope: project scaffold only; no gameplay, Android WebView or hall integration verified.',
-  ].join('\n') + '\n';
-  writeFileSync(join(evidence, 'browser.txt'), report);
-  console.log(report);
-} finally { await browser.close(); }
+const require=createRequire(import.meta.url);
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
+const evidence=join(root,process.env.BROWSER_EVIDENCE_DIR||'doc/evidence/v0.1.0');
+mkdirSync(evidence,{recursive:true});
+const base=process.env.PREVIEW_URL||'http://127.0.0.1:4180';
+const server=process.env.PREVIEW_URL?null:spawn(process.execPath,['scripts/serve.mjs'],{cwd:root,env:{...process.env,PORT:'4180'},windowsHide:true,stdio:'ignore'});
+let browser;
+const results=[],errors=[],failedResponses=[];
+const levels=JSON.parse(readFileSync(join(root,'data/challenges/levels.json'),'utf8'));
+async function check(name,fn){await fn();results.push(`${name}: PASS`);console.log(results.at(-1));}
+function observe(p){p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')errors.push(m.text());});p.on('response',r=>{if(r.status()>=400)failedResponses.push(`${r.status()} ${r.url()}`);});}
+async function ready(p){await p.waitForSelector('html[data-ready="true"]');}
+async function snap(p){return p.evaluate(()=>window.SandpileApp.snapshot());}
+async function stopped(p){await p.waitForFunction(()=>!window.SandpileApp.running,{},{timeout:30000});}
+async function clickCell(p,x,y,touch=false){const s=await snap(p),level=levels.find(l=>l.id===s.settings.levelId);const w=s.settings.mode==='challenge'?level.board.width:s.experiment.state.width,h=s.settings.mode==='challenge'?level.board.height:s.experiment.state.height;await p.locator('#main-board').scrollIntoViewIfNeeded();const b=await p.locator('#main-board').boundingBox();const cx=b.x+(x+.5)*b.width/w,cy=b.y+(y+.5)*b.height/h;if(touch)await p.touchscreen.tap(cx,cy);else await p.mouse.click(cx,cy);}
+async function noOverflow(p){assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');}
+async function confirm(p){await p.locator('#confirm-action').click();}
+async function preset(p,name){await p.locator('#preset').selectOption(name);await p.locator('#load-preset').click();if(await p.locator('#confirm-dialog').isVisible())await confirm(p);}
+async function setAmount(p,n){await p.locator('#amount').fill(String(n));await p.locator('#amount').dispatchEvent('change');}
+try{
+ if(server){let ok=false;for(let i=0;i<50;i++){try{if((await fetch(base)).ok){ok=true;break;}}catch{}await delay(100);}assert.ok(ok,'preview server did not start');}
+ browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGHT_CHANNEL||'chrome'});
+ const context=await browser.newContext({viewport:{width:1280,height:1000},acceptDownloads:true});
+ const page=await context.newPage();observe(page);
+ await check('B01 fresh desktop startup and responsive layout',async()=>{assert.equal((await page.goto(base)).status(),200);await ready(page);assert.equal((await snap(page)).experiment.state.width,65);assert.equal(await page.evaluate(()=>SandpileApp.running),false);await noOverflow(page);});
+ await check('B02 coordinate selection survives amount edit; one synchronous wave',async()=>{for(const axis of ['x','y']){await page.locator('#coord-'+axis).fill('31');await page.locator('#coord-'+axis).dispatchEvent('change');}await setAmount(page,4);await page.locator('#drop-selected').click();let s=(await snap(page)).experiment.state;assert.equal(s.cells[31*65+31],4);await page.locator('#step').click();s=(await snap(page)).experiment.state;assert.equal(s.topplings,1);assert.equal(s.cells[31*65+30],1);assert.equal(s.total,4);});
+ await check('B03 keyboard selection, Enter/Space input and atomic numeric rejection',async()=>{await setAmount(page,1);await page.locator('#main-board').focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('Enter');await page.keyboard.press('Space');assert.equal((await snap(page)).experiment.state.added,6);const before=(await snap(page)).experiment.state;await setAmount(page,1.5);await page.locator('#drop-selected').click();assert.deepEqual((await snap(page)).experiment.state,before);assert.equal(await page.locator('#message').getAttribute('data-error'),'true');await setAmount(page,1);});
+ await check('B04 resize confirmation cancellation preserves experiment',async()=>{const before=(await snap(page)).experiment;await page.locator('#size').selectOption('33');await page.locator('#cancel-action').click();assert.deepEqual((await snap(page)).experiment,before);assert.equal(await page.locator('#size').inputValue(),'65');await page.locator('#size').selectOption('33');await confirm(page);assert.equal((await snap(page)).experiment.state.width,33);});
+ await check('B05 center preset fast stabilization, queue, mode preservation',async()=>{await preset(page,'center');await setAmount(page,10);await clickCell(page,0,0);assert.equal((await snap(page)).experiment.queue.length,1);await page.locator('#stabilize').click();await stopped(page);let s=await snap(page);assert.equal(s.experiment.queue.length,0);assert.equal(s.experiment.state.added,10);assert.ok(s.experiment.state.stable);const before=s.experiment;await page.locator('[data-mode="challenge"]').click();await page.locator('[data-mode="explore"]').click();assert.deepEqual((await snap(page)).experiment,before);await page.screenshot({path:join(evidence,'desktop-explore.png'),fullPage:true});});
+ await check('B06 129 board computation remains cancellable, late callbacks cannot overwrite reset',async()=>{await page.locator('#size').selectOption('129');await confirm(page);await preset(page,'critical');await page.locator('#stabilize').click();await page.locator('#reset').click();await confirm(page);await delay(200);let s=(await snap(page)).experiment.state;assert.equal(s.width,129);assert.equal(s.total,0);assert.equal(s.topplings,0);assert.equal(await page.evaluate(()=>SandpileApp.running),false);});
+ await check('B07 six tutorials win through real canvas clicks and verified paths',async()=>{await page.locator('[data-mode="challenge"]').click();for(const level of levels){await page.locator('#level').selectOption(level.id);for(const p of level.referenceMoves){await clickCell(page,p.x,p.y);await stopped(page);}assert.match(await page.locator('#challenge-result').textContent(),/挑战完成/);assert.equal((await snap(page)).progress[level.id].best,level.maxMoves);}assert.equal(Object.keys((await snap(page)).progress).length,6);await page.screenshot({path:join(evidence,'desktop-challenge.png'),fullPage:true});});
+ await check('B08 undo keeps historical best; forbidden cells do not consume moves; final-budget failure',async()=>{await page.locator('#undo').click();let s=await snap(page);assert.equal(s.progress.combine.best,2);assert.equal(s.challenge.moves,1);await page.locator('#level').selectOption('choose');await clickCell(page,0,0);assert.equal((await snap(page)).challenge.moves,0);await clickCell(page,1,2);await stopped(page);await clickCell(page,2,1);await stopped(page);assert.match(await page.locator('#challenge-result').textContent(),/未达成/);assert.equal((await snap(page)).challenge.moves,2);await page.locator('#undo').click();assert.equal((await snap(page)).challenge.moves,1);});
+ await check('B09 pending experiment and queue restore paused after refresh',async()=>{await page.locator('[data-mode="explore"]').click();await preset(page,'center');await setAmount(page,10);await clickCell(page,0,0);await delay(500);const before=await snap(page);await page.reload();await ready(page);const after=await snap(page);assert.deepEqual(after.experiment,before.experiment);assert.equal(Object.keys(after.progress).length,6);assert.equal(await page.evaluate(()=>SandpileApp.running),false);});
+ let exported;
+ await check('B10 actual JSON download, scoped clearing and confirmed round-trip import',async()=>{await page.evaluate(()=>{for(const k of ['eml.sentinel','life.sentinel','light.sentinel','other-game.sentinel'])localStorage.setItem(k,'keep');});const event=page.waitForEvent('download');await page.locator('#export').click();const download=await event;const path=await download.path();exported=readFileSync(path,'utf8');const before=await snap(page);await page.locator('#clear-data').click();await confirm(page);assert.deepEqual(await page.evaluate(()=>['eml.sentinel','life.sentinel','light.sentinel','other-game.sentinel'].map(k=>localStorage.getItem(k))),Array(4).fill('keep'));assert.equal((await snap(page)).experiment.state.total,0);await page.locator('#import').setInputFiles({name:'save.json',mimeType:'application/json',buffer:Buffer.from(exported)});await confirm(page);assert.deepEqual(await snap(page),before);assert.equal(await page.evaluate(()=>SandpileApp.running),false);});
+ await check('B11 malformed/future/oversized imports reject without state replacement; cancel preserves state',async()=>{const before=await snap(page);const future=JSON.parse(exported);future.schemaVersion=99;for(const text of ['{broken',JSON.stringify(future),' '.repeat(2*1024*1024+1)]){await page.locator('#import').setInputFiles({name:'bad.json',mimeType:'application/json',buffer:Buffer.from(text)});await page.waitForFunction(()=>document.getElementById('message').dataset.error==='true');assert.deepEqual(await snap(page),before);assert.equal(await page.locator('#confirm-dialog').isVisible(),false);}await page.locator('#import').setInputFiles({name:'good.json',mimeType:'application/json',buffer:Buffer.from(exported)});await page.locator('#cancel-action').click();assert.deepEqual(await snap(page),before);});
+ await check('B12 switching away pauses work and corrupt saved data is retained',async()=>{await page.locator('#stabilize').click();const secondary=await context.newPage();await secondary.goto(base);await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'));});assert.equal(await page.evaluate(()=>SandpileApp.running),false);await secondary.close();await page.addInitScript(()=>localStorage.setItem('abelian-sandpile.experiment.v1','{broken'));await page.reload();await ready(page);assert.equal((await snap(page)).experiment.state.total,0);assert.equal(await page.evaluate(()=>localStorage.getItem('abelian-sandpile.experiment.v1')),'{broken');assert.match(await page.locator('#message').textContent(),/未恢复/);});
+ await check('B13 storage write failure keeps memory playable and export available',async()=>{const c=await browser.newContext();await c.addInitScript(()=>{Storage.prototype.setItem=function(){throw new DOMException('Quota full','QuotaExceededError');};});const p=await c.newPage();observe(p);await p.goto(base);await ready(p);await clickCell(p,32,32);await delay(500);assert.equal((await snap(p)).experiment.state.total,1);assert.equal(await p.evaluate(()=>SandpileApp.saveError),true);assert.match(await p.locator('#save-status').textContent(),/尚未保存/);const event=p.waitForEvent('download');await p.locator('#export').click();await event;await c.close();});
+ await check('B14 real touch at 320px, corner/edge loss, rotation and larger font preserve board',async()=>{const c=await browser.newContext({viewport:{width:320,height:740},hasTouch:true,deviceScaleFactor:2});const p=await c.newPage();observe(p);await p.goto(base);await ready(p);await p.locator('[data-mode="challenge"]').click();for(const [id,x,y,lost] of [['corner',0,0,2],['edge',1,0,1]]){await p.locator('#level').selectOption(id);await clickCell(p,x,y,true);await stopped(p);assert.equal((await snap(p)).challenge.state.lost,lost);}await noOverflow(p);await p.screenshot({path:join(evidence,'mobile-challenge.png'),fullPage:true});const before=await snap(p);await p.setViewportSize({width:740,height:320});await p.evaluate(()=>document.documentElement.style.fontSize='20px');await noOverflow(p);assert.deepEqual(await snap(p),before);await c.close();});
+ await check('B15 hall-shaped subpath uses only local relative assets and remains playable',async()=>{const c=await browser.newContext();const p=await c.newPage();observe(p);await p.goto(base+'/assets/games/abelian-sandpile/');await ready(p);await clickCell(p,32,32);assert.equal((await snap(p)).experiment.state.total,1);const resources=await p.evaluate(()=>performance.getEntriesByType('resource').map(x=>x.name).filter(x=>/\.(?:js|css)$/.test(x)));assert.equal(resources.length,9);assert.ok(resources.every(x=>x.includes('/assets/games/abelian-sandpile/')));await c.close();});
+ await check('B16 built file:// game works offline, including challenge and export',async()=>{const c=await browser.newContext({acceptDownloads:true});await c.setOffline(true);const p=await c.newPage();observe(p);await p.goto(pathToFileURL(join(root,'dist/index.html')).href);await ready(p);await p.locator('[data-mode="challenge"]').click();await clickCell(p,1,1);await stopped(p);assert.match(await p.locator('#challenge-result').textContent(),/挑战完成/);const event=p.waitForEvent('download');await p.locator('#export').click();await event;await noOverflow(p);await c.close();});
+ assert.deepEqual(errors,[],'browser errors');assert.deepEqual(failedResponses,[],'HTTP failures');
+ const report=[`Browser: ${browser.version()} (Chrome headless; real DOM/canvas/touch/download)`,...results,`${results.length} passed; 0 failed; 0 page/console errors; 0 HTTP failures`,'Scope: local web v0.1.0 and game-side subpath; no Android WebView or host integration verified.'].join('\n')+'\n';writeFileSync(join(evidence,'browser.txt'),report);console.log(report);
+}catch(error){writeFileSync(join(evidence,'failure.txt'),`${results.join('\n')}\n${error.stack}\n`);throw error;}finally{if(browser)await browser.close();if(server)server.kill();}
