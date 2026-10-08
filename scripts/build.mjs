@@ -5,8 +5,8 @@ import { fileURLToPath } from 'node:url';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const runtimeFiles = Object.freeze([
-  'index.html', 'src/styles.css', 'src/project-config.js', 'src/domain/sandpile.js', 'src/domain/challenge.js',
-  'src/domain/levels.js', 'src/storage/persistence.js', 'src/controller.js', 'src/renderer.js', 'src/app.js', 'LICENSE',
+  'index.html', 'src/styles.css', 'src/project-config.js', 'src/domain/sandpile.js', 'src/domain/challenge.js', 'src/domain/lesson.js',
+  'src/domain/levels.js', 'src/storage/persistence.js', 'src/controller.js', 'src/renderer.js', 'src/teaching.js', 'src/app.js', 'LICENSE',
 ]);
 export const sha256 = (value) => createHash('sha256').update(value).digest('hex');
 

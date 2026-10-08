@@ -102,7 +102,7 @@ test('S07 two builds are byte-for-byte reproducible and exclude development file
       assert.deepEqual(readFileSync(join(first, file)), readFileSync(join(second, file)));
     }
     assert.deepEqual(readdirSync(first).sort(), ['LICENSE', 'asset-manifest.json', 'index.html', 'src']);
-    assert.deepEqual(readdirSync(join(first, 'src')).sort(), ['app.js', 'controller.js', 'domain', 'project-config.js', 'renderer.js', 'storage', 'styles.css']);
+    assert.deepEqual(readdirSync(join(first, 'src')).sort(), ['app.js', 'controller.js', 'domain', 'project-config.js', 'renderer.js', 'storage', 'styles.css', 'teaching.js']);
   });
 });
 

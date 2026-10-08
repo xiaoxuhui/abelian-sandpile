@@ -8,7 +8,7 @@ import { root } from './build.mjs';
 const require=createRequire(import.meta.url);
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),C=require('../src/domain/sandpile.js');
 const base=process.env.PREVIEW_URL||'http://127.0.0.1:4180';
-const evidence=join(root,'doc/evidence/v0.1.1');mkdirSync(evidence,{recursive:true});
+const evidence=join(root,process.env.BROWSER_EVIDENCE_DIR||'doc/evidence/v0.1.2');mkdirSync(evidence,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGHT_CHANNEL||'chrome'});
 const results=[],errors=[];
 const context=await browser.newContext({viewport:{width:1280,height:1000},acceptDownloads:true});
@@ -27,7 +27,7 @@ async function importSave(p,bundle){await p.locator('#import').setInputFiles({na
 try{
  await page.goto(base);await ready(page);
  await check('R01 desktop continuous selected-cell input, locked configuration and stop',async()=>{
-   assert.equal(await page.locator('[data-version]').textContent(),'0.1.1');
+   assert.equal(await page.locator('[data-version]').textContent(),'0.1.2');
    await fill(page,'coord-x',31);await fill(page,'coord-y',30);await fill(page,'amount',4);await fill(page,'pour-interval',100);
    await begin(page);await waitAdded(page,12);assert.deepEqual(await page.evaluate(()=>SandpileApp.pouring),{x:31,y:30,amount:4,interval:100});
    assert.equal(await page.locator('#amount').isDisabled(),true);assert.equal(await page.locator('#pour-interval').isDisabled(),true);

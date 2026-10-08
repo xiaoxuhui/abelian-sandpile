@@ -16,6 +16,14 @@ test('U33 exact trace accounting matches independent engine on every allowed tut
    assert.deepEqual(end.cells,ref.cells);assert.deepEqual(end.odometer,ref.odometer);assert.equal(t.topplings,ref.topplings);assert.equal(t.lost,ref.lost);
    for(const f of t.frames)assert.equal(f.state.total+f.state.lost,f.state.initialTotal+f.state.added);
  }
+ for(const level of levels){let before=C.create(level.board.width,level.board.height,level.board.initial);
+   for(const p of level.referenceMoves){const old=C.clone(before),t=L.trace(before,p.x,p.y),dropped=C.clone(before);C.drop(dropped,p.x,p.y,1);
+     const ref=reference(before.width,before.height,dropped.cells),end=t.frames.at(-1).state;
+     assert.deepEqual(before,old);assert.deepEqual(end.cells,ref.cells);assert.equal(t.topplings,ref.topplings);assert.equal(t.lost,ref.lost);
+     assert.deepEqual(end.odometer.map((v,i)=>v-before.odometer[i]),ref.odometer);before=end;
+   }
+   assert.deepEqual(before.cells,level.board.target);
+ }
  const quiet=L.trace(C.create(3,3),1,1);assert.equal(quiet.frames.length,1);assert.equal(quiet.topplings,0);
  const corner=L.trace(C.create(3,3,[3,0,0,0,0,0,0,0,0]),0,0);assert.equal(corner.lost,2);
  const before=C.create(3,3,[0,3,0,0,3,0,0,0,0]),old=C.clone(before);assert.throws(()=>L.trace(before,1,1,1,1),/波次/);assert.deepEqual(before,old);
