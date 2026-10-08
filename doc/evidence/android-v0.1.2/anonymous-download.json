@@ -1,0 +1,50 @@
+{
+  "draft": false,
+  "prerelease": true,
+  "assets": [
+    {
+      "anonymousDownload": true,
+      "matchesPublishedDigest": true,
+      "bytes": 2296848,
+      "sha256": "66f63b608454ef5a4a554b5e26a00e1e715d312b4bb134345ffa5496307f47c0",
+      "name": "abelian-sandpile-android-0.1.2-debug.apk",
+      "matchesTagArtifact": true
+    },
+    {
+      "anonymousDownload": true,
+      "matchesPublishedDigest": true,
+      "bytes": 27979,
+      "sha256": "4ad83edbef9388b6b84469181d314371ef70a40f2017054dab505541998ec4cb",
+      "name": "abelian-sandpile-web-0.1.2.zip",
+      "matchesTagArtifact": true
+    },
+    {
+      "anonymousDownload": true,
+      "matchesPublishedDigest": true,
+      "bytes": 204,
+      "sha256": "7bdc1cb6a3bc35333f1ee53aca8c5f5218770d3a6c94ef42dd9fafe7882c94f7",
+      "name": "SHA256SUMS.txt",
+      "matchesTagArtifact": true
+    },
+    {
+      "anonymousDownload": true,
+      "matchesPublishedDigest": true,
+      "bytes": 842,
+      "sha256": "eb2f391937178b13defe12bc49af7cca1b8a44c3ce2e72e26a7f30df73853df8",
+      "name": "apk-verification.json",
+      "matchesTagArtifact": true
+    },
+    {
+      "anonymousDownload": true,
+      "matchesPublishedDigest": true,
+      "bytes": 966,
+      "sha256": "7b21e416d7832a3c343dae650b283bd62b536e90ecf9bf10b504505d73b3f004",
+      "name": "apksigner.txt",
+      "matchesTagArtifact": true
+    }
+  ],
+  "tag": "v0.1.2",
+  "releaseId": 407309588,
+  "sourceSha": "5f95b1ad31befea93328317e8a24a14406f8f3f8",
+  "url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/tag/v0.1.2"
+}

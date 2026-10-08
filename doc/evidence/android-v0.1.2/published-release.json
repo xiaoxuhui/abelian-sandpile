@@ -1,0 +1,39 @@
+{
+  "assets": [
+    {
+      "name": "abelian-sandpile-android-0.1.2-debug.apk",
+      "size": 2296848,
+      "browser_download_url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/download/v0.1.2/abelian-sandpile-android-0.1.2-debug.apk",
+      "digest": "sha256:66f63b608454ef5a4a554b5e26a00e1e715d312b4bb134345ffa5496307f47c0"
+    },
+    {
+      "name": "abelian-sandpile-web-0.1.2.zip",
+      "size": 27979,
+      "browser_download_url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/download/v0.1.2/abelian-sandpile-web-0.1.2.zip",
+      "digest": "sha256:4ad83edbef9388b6b84469181d314371ef70a40f2017054dab505541998ec4cb"
+    },
+    {
+      "name": "apk-verification.json",
+      "size": 842,
+      "browser_download_url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/download/v0.1.2/apk-verification.json",
+      "digest": "sha256:eb2f391937178b13defe12bc49af7cca1b8a44c3ce2e72e26a7f30df73853df8"
+    },
+    {
+      "name": "apksigner.txt",
+      "size": 966,
+      "browser_download_url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/download/v0.1.2/apksigner.txt",
+      "digest": "sha256:7b21e416d7832a3c343dae650b283bd62b536e90ecf9bf10b504505d73b3f004"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "size": 204,
+      "browser_download_url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/download/v0.1.2/SHA256SUMS.txt",
+      "digest": "sha256:7bdc1cb6a3bc35333f1ee53aca8c5f5218770d3a6c94ef42dd9fafe7882c94f7"
+    }
+  ],
+  "id": 407309588,
+  "prerelease": true,
+  "draft": false,
+  "url": "https://github.com/xiaoxuhui/abelian-sandpile/releases/tag/v0.1.2",
+  "tag": "v0.1.2"
+}
