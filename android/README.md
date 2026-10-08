@@ -2,7 +2,7 @@
 
 版本0.1.2／versionCode1；包名com.xiaoxuhui.abeliansandpile；Android7.0+，target/compileSdk34。
 
-按 mini-app-harness/web-app-to-android-apk 模板：AGP8.5.2、Gradle8.7、JDK17。无权限、无网络，固定HTTPS本地origin。网页13文件由dist按白名单同步，不维护副本。
+按 mini-app-harness/web-app-to-android-apk 模板：AGP8.5.2、Gradle8.7、JDK17。无系统网络／存储权限，固定HTTPS本地origin；仅保留AndroidX本应用同签名接收器防护权限。网页13文件由dist按白名单同步，不维护副本。
 
 ## 构建
 
