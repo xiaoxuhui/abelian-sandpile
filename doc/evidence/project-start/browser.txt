@@ -1,0 +1,9 @@
+Browser: 154.0.8037.98 (Chrome, headless, fresh context)
+B01 desktop root startup and layout (1280x900): PASS
+B02 click both mode explanations and preserve pressed state: PASS
+B03 Enter and Space keyboard activation: PASS
+B04 mobile viewport switches both modes without overflow (320x740): PASS
+B05 hall-shaped subpath loads local resources and interaction: PASS
+B06 built file opens and switches modes while offline: PASS
+6 passed; 0 failed; 0 page/console errors; 0 HTTP failures
+Scope: project scaffold only; no gameplay, Android WebView or hall integration verified.
