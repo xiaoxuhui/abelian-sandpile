@@ -1,8 +1,8 @@
 {
   "name": "abelian-sandpile",
-  "version": "0.1.0-dev.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "阿贝尔沙滩：离线阿贝尔沙堆探索与挑战小游戏（项目骨架）",
+  "description": "阿贝尔沙滩：离线阿贝尔沙堆探索与六个教学挑战关",
   "license": "MIT",
   "author": "xiaoxuhui",
   "repository": { "type": "git", "url": "https://github.com/xiaoxuhui/abelian-sandpile.git" },
@@ -13,6 +13,8 @@
     "test": "node --test",
     "check": "node scripts/check.mjs",
     "build": "node scripts/build.mjs",
-    "serve": "node scripts/serve.mjs"
+    "serve": "node scripts/serve.mjs",
+    "verify:levels": "node scripts/verify-levels.mjs",
+    "test:browser": "node scripts/verify-browser.mjs"
   }
 }

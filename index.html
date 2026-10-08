@@ -1,59 +1,32 @@
 <!doctype html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="description" content="阿贝尔沙滩项目骨架：基于阿贝尔沙堆的自由探索与挑战关卡规划。">
-  <title>阿贝尔沙滩 · 项目起点</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="src/styles.css">
-  <script src="src/project-config.js" defer></script>
-  <script src="src/app.js" defer></script>
-</head>
-<body>
-  <main>
-    <header class="masthead">
-      <span class="wordmark">数学游乐场 / 005</span>
-      <span class="stage">项目骨架 <span data-version>0.1.0-dev.0</span></span>
-    </header>
-    <section class="hero" aria-labelledby="title">
-      <p class="eyebrow">ABELIAN SANDPILE</p>
-      <h1 id="title">阿贝尔沙滩<span class="title-dot">。</span></h1>
-      <p class="lead">从一粒沙开始，观察一场连锁反应。</p>
-      <p class="intro">规则、探索与挑战的起点。这个项目已建立工程骨架与需求草案，沙堆演化和正式关卡将在后续阶段实现。</p>
-      <div class="rule" aria-label="标准模型规则示意，不是运行中的棋盘">
-        <span class="rule-number">4</span><span class="rule-arrow">→</span>
-        <div class="cross" aria-label="向上下左右各分出一粒"><span class="north">1</span><span class="west">1</span><span class="center">0</span><span class="east">1</span><span class="south">1</span></div>
-        <p>一格达到四粒，<br>向四个邻格各分出一粒。</p>
-      </div>
-    </section>
-    <section class="planning" aria-labelledby="planning-title">
-      <div class="section-heading"><h2 id="planning-title">两种玩法，一套规则</h2><span>设计规划</span></div>
-      <div class="mode-buttons" role="group" aria-label="切换玩法规划">
-        <button type="button" data-mode="explore" aria-pressed="true" aria-controls="explore-panel">01 自由探索</button>
-        <button type="button" data-mode="challenge" aria-pressed="false" aria-controls="challenge-panel">02 挑战关卡</button>
-      </div>
-      <article id="explore-panel" data-panel="explore">
-        <p class="panel-kicker">自由探索 · 拟议首版</p>
-        <h3>投沙、暂停，再看清每一次崩塌。</h3>
-        <p>在有限方格棋盘投沙，观察四邻接传播与边界流失。计划提供预设、单步、稳定化、粒数统计及实验保存。</p>
-        <div class="tags"><span>离线运行</span><span>单步观察</span><span>质量守恒账本</span></div>
-      </article>
-      <article id="challenge-panel" data-panel="challenge" hidden>
-        <p class="panel-kicker">挑战关卡 · 拟议规则</p>
-        <h3>有限的投沙次数，精确的目标图案。</h3>
-        <p>从给定初态出发，在指定位置每次投一粒，等待雪崩稳定。全棋盘与目标完全一致才达成挑战，关卡可解性与最少步数需工具验证。</p>
-        <div class="tags"><span>精确匹配</span><span>次数预算</span><span>关卡穷举验证</span></div>
-      </article>
-      <noscript><p>此页的说明切换需要 JavaScript；需求与设计文档可在项目 doc 目录阅读。</p></noscript>
-    </section>
-    <section class="foundation" aria-label="项目约定">
-      <div><span class="item-number">01 / 流程</span><h3>规划先行</h3><p>沿用 EML 的开发规则，需求、测试与实现同步推进。</p></div>
-      <div><span class="item-number">02 / 集成</span><h3>为游戏大厅准备</h3><p>离线资源与独立存档前缀已规划；第五游戏接入待宿主扩展。</p></div>
-      <div><span class="item-number">03 / 共享</span><h3>MIT 开源基础</h3><p>源代码仓库已公开；当前仍为项目骨架，尚未发行正式版本。</p></div>
-    </section>
-    <footer><span>需求与设计见项目 doc/ 目录</span><span>2026.10 · 项目启动</span></footer>
-  </main>
-</body>
-</html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light">
+<title>阿贝尔沙滩 · 一粒沙的连锁反应</title><link rel="icon" href="data:,"><link rel="stylesheet" href="src/styles.css">
+<script src="src/project-config.js" defer></script><script src="src/domain/sandpile.js" defer></script><script src="src/domain/challenge.js" defer></script><script src="src/domain/levels.js" defer></script><script src="src/storage/persistence.js" defer></script><script src="src/controller.js" defer></script><script src="src/renderer.js" defer></script><script src="src/app.js" defer></script>
+</head><body><main>
+<header class="masthead"><a class="wordmark" href="#main-board">阿贝尔沙滩<span>ABELIAN SANDPILE</span></a><span class="version">本地网页版 <b data-version>0.1.0</b></span></header>
+<section class="hero"><div><p class="eyebrow">一粒沙，一场连锁反应</p><h1>让简单规则，<br>长出复杂图案<span>。</span></h1></div><p class="rule-note">达到 <strong>4</strong> 粒时崩塌，<br>向上下左右各送出 <strong>1</strong> 粒。<br><span>越过边界的沙，会流出棋盘。</span></p></section>
+<div class="mode-buttons" role="group" aria-label="选择玩法"><button data-mode="explore" aria-pressed="true">01 自由探索</button><button data-mode="challenge" aria-pressed="false">02 教学挑战</button></div>
+<div id="message" class="message" role="status" aria-live="polite">点击棋盘投沙，或载入中心堆沙后点击“稳定化”。</div>
+<div class="workspace"><section class="board-panel" aria-labelledby="board-heading">
+<div class="section-heading"><h2 id="board-heading">自由探索</h2><span id="state-label">稳定 · 已暂停</span></div>
+<canvas id="main-board" tabindex="0" role="application" aria-label="沙堆棋盘，方向键选择，Enter 或空格投沙"></canvas>
+<div class="board-caption"><span id="selected-cell">选中格</span><span id="queue-count">等待投入 0 项</span></div>
+<div class="transport"><button id="run">运行</button><button id="step">单步</button><button id="stabilize">稳定化</button><button id="reset" class="quiet">清空棋盘</button><button id="undo" hidden>撤销一步</button></div>
+<div class="legend" aria-label="粒数颜色图例"><span><i class="c0"></i>0</span><span><i class="c1"></i>1</span><span><i class="c2"></i>2</span><span><i class="c3"></i>3</span><span><i class="c4"></i>≥4 不稳定</span></div>
+<div class="metrics"><div><span>当前粒数</span><strong id="stat-total">0</strong></div><div><span>累计投入</span><strong id="stat-added">0</strong></div><div><span>流出边界</span><strong id="stat-lost">0</strong></div><div><span>基础崩塌</span><strong id="stat-topplings">0</strong></div></div>
+<p class="ledger" id="ledger"></p><p class="ledger" id="avalanche"></p></section>
+<aside class="tools"><section id="explore-tools"><p class="eyebrow">实验设置</p>
+<label>棋盘尺寸<select id="size"><option value="33">33 × 33</option><option value="65" selected>65 × 65</option><option value="129">129 × 129</option></select></label>
+<label>每次投入粒数<input id="amount" type="number" min="1" max="100000" step="1" value="1" inputmode="numeric"></label>
+<div class="amount-presets" role="group" aria-label="投沙量"><button data-amount="1">1</button><button data-amount="10">10</button><button data-amount="100">100</button><button data-amount="1000">1000</button></div>
+<div class="coordinates"><label>横坐标 x<input id="coord-x" type="number" min="0" value="32"></label><label>纵坐标 y<input id="coord-y" type="number" min="0" value="32"></label></div>
+<button id="drop-selected" class="wide primary">向选中格投沙</button><p class="control-note">小格不易触碰时，可用坐标或键盘精确投沙。坐标从 0 开始。</p>
+<label>实验预设<select id="preset"><option value="empty">空棋盘</option><option value="center">中心 4096 粒</option><option value="critical">满 3 粒后中心加一粒</option></select></label><button id="load-preset" class="wide">载入预设</button></section>
+<section id="challenge-tools" hidden><p class="eyebrow">六堂沙堆小课</p><label>选择关卡<select id="level"></select></label><p id="level-description"></p><div id="challenge-progress"></div><h3>目标图案</h3><canvas id="target-board" aria-label="关卡目标图案"></canvas><p id="challenge-result" role="status"></p><p class="control-note">白色虚线是允许位置。每次一粒，稳定后才能继续；可暂停观察。</p><button id="next-level" class="wide primary" hidden>下一关</button></section>
+<section><label>动画速度 <output id="speed-label">20 波/秒</output><input id="speed" type="range" min="1" max="60" value="20"></label><p class="control-note">单步是一轮同步波。稳定化使用快速计算，终态相同，随时可暂停。</p></section></aside></div>
+<section class="file-tools" aria-label="保存与恢复"><div><h2>保存这片沙滩</h2><p id="save-status">修改后自动保存在本机；恢复后保持暂停。</p></div><div class="file-buttons"><button id="export">导出 JSON</button><label class="file-button">导入 JSON<input id="import" type="file" accept=".json,application/json"></label><button id="clear-data" class="quiet">清除本游戏存档</button></div></section>
+<details class="help"><summary>玩法与规则</summary><p>自由探索中，点击棋盘或“向选中格投沙”增加粒数。先暂停观察，再单步或运行。不稳定时新投沙进入队列，稳定后按序执行。</p><p>挑战中只能向虚线格投一粒。全棋盘稳定后与目标完全一致才通关。最少步数已用逐层搜索验证，撤销不会取消历史完成记录。</p><p>一次基础崩塌减少四粒，向四方向各给一粒。边缘阈值也为四。总量＋流失＝初始总量＋投入。</p><p>本局初始＋累计投入上限 100 万粒；单次上限 10 万；导入上限 2MiB。重要实验请导出 JSON。当前版本只提供网页。</p></details>
+<footer><span>阿贝尔沙滩 · MIT · 离线运行</span><span>四邻接 / 开放边界</span></footer><noscript>请启用 JavaScript 运行游戏。</noscript></main>
+<dialog id="confirm-dialog"><h2>确认开始新的状态？</h2><p id="confirm-message"></p><div class="dialog-actions"><button id="cancel-action">取消</button><button id="confirm-action" class="primary">确认</button></div></dialog>
+</body></html>

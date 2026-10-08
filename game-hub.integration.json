@@ -3,20 +3,20 @@
   "status": "candidate-host-extension-required",
   "id": "abelian-sandpile",
   "displayName": "阿贝尔沙滩",
-  "version": "0.1.0-dev.0",
+  "version": "0.1.0",
   "repository": "https://github.com/xiaoxuhui/abelian-sandpile.git",
   "revision": null,
   "buildKind": "static",
   "entryPage": "index.html",
-  "files": ["index.html", "src/styles.css", "src/project-config.js", "src/app.js"],
+  "files": ["index.html", "src/styles.css", "src/project-config.js", "src/domain/sandpile.js", "src/domain/challenge.js", "src/domain/levels.js", "src/storage/persistence.js", "src/controller.js", "src/renderer.js", "src/app.js"],
   "licenseFile": "LICENSE",
   "storageKeys": [
     "abelian-sandpile.experiment.v1",
     "abelian-sandpile.progress.v1",
     "abelian-sandpile.settings.v1"
   ],
-  "storageContractDraft": "abelian-sandpile-save-v1",
+  "storageContract": "abelian-sandpile-save-v1",
   "hostCompatibility": null,
   "nativeBridge": null,
-  "notes": "本地候选合约，不是现有 sources.lock.json 条目或签名资源目录；存档和原生桥尚未实现。"
+  "notes": "本游戏网页来源合约，不是大厅 sources.lock.json 条目或签名目录；宿主兼容及原生桥未实现。"
 }

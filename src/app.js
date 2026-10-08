@@ -1,17 +1,65 @@
 (function () {
-  "use strict";
-  const config = window.AbelianSandpileProject;
-  document.querySelector("[data-version]").textContent = config.version;
-  const buttons = Array.from(document.querySelectorAll("[data-mode]"));
-  const panels = Array.from(document.querySelectorAll("[data-panel]"));
-  for (const button of buttons) {
-    button.addEventListener("click", function () {
-      const mode = button.dataset.mode;
-      for (const item of buttons) {
-        item.setAttribute("aria-pressed", String(item === button));
-      }
-      for (const panel of panels) panel.hidden = panel.dataset.panel !== mode;
-    });
-  }
-  document.documentElement.dataset.ready = "true";
+'use strict';
+const C=window.SandpileCore,H=window.SandpileChallenge,P=window.SandpileStorage,R=window.SandpileRenderer;
+const levels=window.SandpileLevels,$=id=>document.getElementById(id),board=$('main-board');
+let point={x:1,y:1},action=null,timer=null,storage=null,saveError=false;
+const ctrl=new window.SandpileController.Controller(levels,{onChange:()=>{render();queueSave();}});
+ctrl.onError=e=>message(e.message,true);
+document.querySelector('[data-version]').textContent=window.AbelianSandpileProject.version;
+for(const level of levels){const option=document.createElement('option');option.value=level.id;option.textContent=level.title;$('level').append(option);}
+function message(text,error=false){$('message').textContent=text;$('message').dataset.error=String(error);}
+function safely(fn){try{fn();}catch(e){message(e.message,true);}}
+function saveNow(){if(timer!==null){clearTimeout(timer);timer=null;}try{if(!storage)throw new Error('浏览器未允许本地存储');P.save(storage,ctrl.snapshot(),levels);saveError=false;$('save-status').textContent='已自动保存在本机；恢复后保持暂停。';}catch(e){saveError=true;$('save-status').textContent=`尚未保存：${e.message}。请导出 JSON。`;}}
+function queueSave(){if(timer===null)timer=setTimeout(saveNow,400);}
+function selected(){return ctrl.settings.mode==='explore'?ctrl.selected:point;}
+function render(){
+const challenge=ctrl.settings.mode==='challenge',s=ctrl.state,p=selected();
+document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===ctrl.settings.mode)));
+$('explore-tools').hidden=challenge;$('challenge-tools').hidden=!challenge;$('undo').hidden=!challenge;
+$('board-heading').textContent=challenge?ctrl.session.level.title:'自由探索';
+$('state-label').textContent=`${s.stable?'稳定':'雪崩中'} · ${ctrl.running?ctrl.fast?'快速计算':'运行中':'已暂停'}`;
+$('run').textContent=ctrl.running?'暂停':'运行';$('reset').textContent=challenge?'重置关卡':'清空棋盘';$('undo').disabled=!ctrl.session.history.length;
+$('run').disabled=!ctrl.running&&s.stable&&(challenge||!ctrl.queue.length);
+$('step').disabled=s.stable&&(challenge||!ctrl.queue.length);$('stabilize').disabled=$('step').disabled;
+R.draw(board,s,p,challenge?ctrl.session.level.allowedDropCells:[]);
+board.setAttribute('aria-label',`${s.width}×${s.height} 沙堆棋盘，方向键选择，Enter 或空格投沙`);
+$('selected-cell').textContent=`选中 (${p.x}, ${p.y}) · ${s.cells[p.y*s.width+p.x]} 粒`;
+$('queue-count').textContent=challenge?`已完成 ${Object.keys(ctrl.progress).length} / 6 关`:`等待投入 ${ctrl.queue.length} 项`;
+for(const key of ['total','added','lost','topplings'])$('stat-'+key).textContent=String(s[key]);
+$('ledger').textContent=`账本：${s.total} + ${s.lost} = ${s.initialTotal} + ${s.added}`;
+$('avalanche').textContent=s.avalancheActive?`本次雪崩已崩塌 ${s.currentAvalanche} 次`:`最近一次雪崩：${s.lastAvalanche} 次基础崩塌`;
+$('size').value=String(ctrl.experiment.width);$('speed').value=String(ctrl.settings.speed);$('speed-label').textContent=`${ctrl.settings.speed} 波/秒`;
+if(document.activeElement!==$('amount'))$('amount').value=String(ctrl.settings.amount);
+for(const axis of ['x','y']){if(document.activeElement!==$('coord-'+axis))$('coord-'+axis).value=String(ctrl.selected[axis]);$('coord-'+axis).max=ctrl.experiment.width-1;}
+$('level').value=ctrl.settings.levelId;
+for(const option of $('level').options){const l=levels.find(x=>x.id===option.value);option.textContent=l.title+(ctrl.progress[l.id]?' ✓':'');}
+if(challenge){const l=ctrl.session.level,status=H.status(ctrl.session),best=ctrl.progress[l.id];R.draw($('target-board'),{width:l.board.width,height:l.board.height,cells:l.board.target});$('level-description').textContent=l.description;$('challenge-progress').textContent=`已用 ${ctrl.session.moves} / ${l.maxMoves} 步 · 最少 ${l.maxMoves} 步${best?' · 个人最好 '+best.best:''}`;$('challenge-result').textContent=status==='won'?'图案完全匹配，挑战完成！':status==='failed'?'次数已用完，本次未达成。试试撤销或重置。':status==='busy'?'雪崩尚未稳定，请等待或单步观察。':'点击虚线格，每次投一粒。';$('next-level').hidden=status!=='won'||l.id===levels.at(-1).id;}
+}
+function confirmAction(text,fn){action=fn;$('confirm-message').textContent=text;$('confirm-dialog').showModal();$('cancel-action').focus();}
+$('cancel-action').onclick=()=>{action=null;$('confirm-dialog').close();render();};
+$('confirm-action').onclick=()=>{const fn=action;action=null;$('confirm-dialog').close();if(fn)safely(fn);};
+$('confirm-dialog').addEventListener('cancel',()=>{action=null;render();});
+function replace(size,preset){const fn=()=>{ctrl.resetExperiment(size,preset);message('新实验已载入，当前暂停。');};if(ctrl.experiment.total||ctrl.queue.length)confirmAction('替换当前实验与待处理投入，关卡记录保留。',fn);else safely(fn);}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>safely(()=>{ctrl.mode(b.dataset.mode);point={...ctrl.session.level.allowedDropCells[0]};message(ctrl.settings.mode==='explore'?'点击或按键投沙；已有实验已保留。':'在虚线位置每次投一粒。');}));
+function amount(){const n=Number($('amount').value);C.integer(n,1,C.LIMITS.input,'投沙量');ctrl.settings.amount=n;return n;}
+function drop(p){safely(()=>{if(ctrl.settings.mode==='explore'){ctrl.selected=p;ctrl.drop(p.x,p.y,amount());}else{point=p;ctrl.drop(p.x,p.y);}message(ctrl.queue.length?'投入已排队，请运行或稳定化。':'已投沙。');});render();}
+board.onclick=e=>{const p=R.hit(board,ctrl.state,e.clientX,e.clientY);if(p){board.focus({preventScroll:true});drop(p);}};
+board.onkeydown=e=>{const p=selected(),keys={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(keys[e.key]){e.preventDefault();p.x=Math.max(0,Math.min(ctrl.state.width-1,p.x+keys[e.key][0]));p.y=Math.max(0,Math.min(ctrl.state.height-1,p.y+keys[e.key][1]));ctrl.changed();}else if(e.key==='Enter'||e.key===' '){e.preventDefault();drop({...p});}};
+$('drop-selected').onclick=()=>safely(()=>{const x=Number($('coord-x').value),y=Number($('coord-y').value);C.integer(x,0,ctrl.experiment.width-1,'横坐标');C.integer(y,0,ctrl.experiment.height-1,'纵坐标');drop({x,y});});
+$('amount').onchange=()=>safely(()=>{amount();ctrl.changed();});
+document.querySelectorAll('[data-amount]').forEach(b=>b.onclick=()=>{ctrl.settings.amount=Number(b.dataset.amount);$('amount').value=String(ctrl.settings.amount);ctrl.changed();});
+$('size').onchange=()=>replace(Number($('size').value),'empty');$('load-preset').onclick=()=>replace(ctrl.experiment.width,$('preset').value);
+$('run').onclick=()=>safely(()=>ctrl.running?ctrl.pause():ctrl.run());$('step').onclick=()=>safely(()=>ctrl.step());$('stabilize').onclick=()=>safely(()=>ctrl.run(true));
+$('speed').oninput=()=>{ctrl.settings.speed=Number($('speed').value);ctrl.changed();};
+$('reset').onclick=()=>ctrl.settings.mode==='explore'?replace(ctrl.experiment.width,'empty'):confirmAction('重置当前关卡，保留历史完成记录。',()=>ctrl.chooseLevel(ctrl.settings.levelId));
+$('undo').onclick=()=>safely(()=>ctrl.undo());
+function choose(id){ctrl.chooseLevel(id);point={...ctrl.session.level.allowedDropCells[0]};render();}
+$('level').onchange=()=>safely(()=>choose($('level').value));$('next-level').onclick=()=>safely(()=>choose(levels[levels.findIndex(x=>x.id===ctrl.settings.levelId)+1].id));
+$('export').onclick=()=>safely(()=>{const text=P.encode(ctrl.snapshot(),levels),url=URL.createObjectURL(new Blob([text],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='abelian-sandpile-save-v1.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);message('已请求导出，请查看浏览器下载位置。');});
+$('import').onchange=async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>P.MAX_BYTES)throw new Error('存档超过 2MiB');const bundle=P.decode(await file.text(),levels);confirmAction('导入会替换当前实验、关卡现场与完成记录。取消保留原数据。',()=>{ctrl.restore(bundle);point={...ctrl.session.level.allowedDropCells[0]};render();saveNow();message('导入完成，已暂停。');});}catch(error){message(error.message,true);}finally{e.target.value='';}};
+$('clear-data').onclick=()=>confirmAction('仅清除阿贝尔沙滩数据，其他游戏存档保留。',()=>{ctrl.stop();if(timer!==null){clearTimeout(timer);timer=null;}if(storage)P.clear(storage);ctrl.progress={};ctrl.queue=[];ctrl.experiment=C.preset(65,'empty');ctrl.selected={x:32,y:32};ctrl.settings={mode:'explore',speed:20,amount:1,levelId:levels[0].id};ctrl.session=H.create(levels[0]);render();message('本游戏存档已清除。');$('save-status').textContent='存档已清除，下一次修改会自动保存。';});
+try{storage=window.localStorage;const saved=P.load(storage,levels);if(saved){ctrl.restore(saved);point={...ctrl.session.level.allowedDropCells[0]};message('已恢复本机存档，当前暂停。');}}catch(e){saveError=true;message(`未恢复存档：${e.message}。原文件未删除。`,true);$('save-status').textContent='存档不可用，请导出重要实验。';}
+document.addEventListener('visibilitychange',()=>{if(document.hidden){ctrl.pause();saveNow();}});window.addEventListener('pagehide',saveNow);
+new ResizeObserver(()=>render()).observe(board);render();document.documentElement.dataset.ready='true';
+window.SandpileApp=Object.freeze({snapshot:()=>ctrl.snapshot(),get running(){return ctrl.running;},get saveError(){return saveError;}});
 })();

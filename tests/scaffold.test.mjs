@@ -25,8 +25,9 @@ test('S01 candidate static contract lists all shipped web resources', () => {
 test('S02 page resource references resolve in a nested game directory', () => {
   const references = [...read('index.html').matchAll(/\b(?:src|href)="([^"]+)"/g)]
     .map((match) => match[1]).filter((reference) => !reference.startsWith('data:'));
-  assert.equal(references.length, 3);
-  for (const reference of references) {
+  const resources = references.filter((reference) => !reference.startsWith('#'));
+  assert.equal(resources.length, contract.files.length - 1);
+  for (const reference of resources) {
     const url = new URL(reference, 'https://appassets.androidplatform.net/assets/games/abelian-sandpile/index.html');
     assert.equal(url.origin, 'https://appassets.androidplatform.net');
     assert.ok(url.pathname.startsWith('/assets/games/abelian-sandpile/'));
@@ -35,11 +36,11 @@ test('S02 page resource references resolve in a nested game directory', () => {
   }
 });
 
-test('S03 runtime has no external dependencies or storage mutation', () => {
+test('S03 runtime has no external dependencies or broad storage clear', () => {
   for (const path of contract.files) {
     const source = read(path);
     assert.doesNotMatch(source, /https?:\/\/|@import|\bfetch\s*\(|\bXMLHttpRequest\b|\bWebSocket\b/);
-    assert.doesNotMatch(source, /\b(?:localStorage|sessionStorage)\b/);
+    assert.doesNotMatch(source, /\b(?:localStorage|sessionStorage)\s*\.\s*clear\s*\(/);
   }
   assert.equal(Object.keys(pkg.dependencies || {}).length, 0);
   assert.equal(Object.keys(pkg.devDependencies || {}).length, 0);
@@ -74,7 +75,7 @@ test('S05 challenge example is a stable format draft, not a verified level', () 
 test('S06 build emits exact bytes and auditable resource hashes', () => {
   withTemporaryBuild((output) => {
     const manifest = build(output);
-    assert.equal(manifest.stage, 'scaffold');
+    assert.equal(manifest.stage, 'playable');
     assert.equal(manifest.version, pkg.version);
     assert.deepEqual(manifest.files.map((file) => file.path), runtimeFiles);
     for (const file of manifest.files) {
@@ -98,7 +99,7 @@ test('S07 two builds are byte-for-byte reproducible and exclude development file
       assert.deepEqual(readFileSync(join(first, file)), readFileSync(join(second, file)));
     }
     assert.deepEqual(readdirSync(first).sort(), ['LICENSE', 'asset-manifest.json', 'index.html', 'src']);
-    assert.deepEqual(readdirSync(join(first, 'src')).sort(), ['app.js', 'project-config.js', 'styles.css']);
+    assert.deepEqual(readdirSync(join(first, 'src')).sort(), ['app.js', 'controller.js', 'domain', 'project-config.js', 'renderer.js', 'storage', 'styles.css']);
   });
 });
 
