@@ -26,10 +26,13 @@ async function confirm(p){await p.locator('#confirm-action').click();}
 async function importSave(p,bundle){await p.locator('#import').setInputFiles({name:'save.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(bundle))});await confirm(p);}
 try{
  await page.goto(base);await ready(page);
- await check('R01 desktop continuous selected-cell input, locked configuration and stop',async()=>{
+ await check('R01 desktop arbitrary integer interval, 1ms keyboard increment, locked configuration and stop',async()=>{
    assert.equal(await page.locator('[data-version]').textContent(),'0.1.2');
-   await fill(page,'coord-x',31);await fill(page,'coord-y',30);await fill(page,'amount',4);await fill(page,'pour-interval',100);
-   await begin(page);await waitAdded(page,12);assert.deepEqual(await page.evaluate(()=>SandpileApp.pouring),{x:31,y:30,amount:4,interval:100});
+   await fill(page,'coord-x',31);await fill(page,'coord-y',30);await fill(page,'amount',4);await fill(page,'pour-interval',137);
+   assert.equal(await page.locator('#pour-interval').evaluate(el=>el.checkValidity()),true,'137ms must be a valid integer interval');
+   await page.locator('#pour-interval').focus();await page.keyboard.press('ArrowUp');assert.equal(await page.locator('#pour-interval').inputValue(),'138');
+   await page.keyboard.press('ArrowDown');assert.equal(await page.locator('#pour-interval').inputValue(),'137');
+   await begin(page);await waitAdded(page,12);assert.deepEqual(await page.evaluate(()=>SandpileApp.pouring),{x:31,y:30,amount:4,interval:137});
    assert.equal(await page.locator('#amount').isDisabled(),true);assert.equal(await page.locator('#pour-interval').isDisabled(),true);
    assert.match(await page.locator('#pour-status').textContent(),/31, 30/);await page.screenshot({path:join(evidence,'desktop-repeat.png'),fullPage:true});
    await page.locator('#repeat-drop').click();await unchanged(page);assert.equal(await page.locator('#amount').isDisabled(),false);
@@ -41,7 +44,11 @@ try{
    await page.locator('#repeat-drop').focus();await page.keyboard.press('Space');await unchanged(page);
  });
  await check('R03 invalid interval does not add grains; reset confirmation pauses and cancels old frames',async()=>{
-   const before=(await snap(page)).experiment.state;await fill(page,'pour-interval',99);await page.locator('#repeat-drop').click();assert.deepEqual((await snap(page)).experiment.state,before);assert.equal(await page.evaluate(()=>SandpileApp.pouring),null);assert.match(await page.locator('#message').textContent(),/间隔/);
+   const before=(await snap(page)).experiment.state;
+   for(const value of [99,5001,137.5]){
+     await fill(page,'pour-interval',value);assert.equal(await page.locator('#pour-interval').evaluate(el=>el.checkValidity()),false);
+     await page.locator('#repeat-drop').click();assert.deepEqual((await snap(page)).experiment.state,before);assert.equal(await page.evaluate(()=>SandpileApp.pouring),null);assert.match(await page.locator('#message').textContent(),/间隔/);
+   }
    await fill(page,'pour-interval',100);await begin(page);await page.locator('#reset').click();assert.equal(await page.evaluate(()=>SandpileApp.pouring),null);await page.locator('#cancel-action').click();await unchanged(page);
    await begin(page);await page.locator('#reset').click();await confirm(page);await unchanged(page);assert.equal((await snap(page)).experiment.state.total,0);
  });
@@ -65,9 +72,10 @@ try{
    assert.equal((await snap(page)).experiment.state.added,3);assert.match(await page.locator('#message').textContent(),/累计/);await unchanged(page);
  });
  await check('R07 320px touch start/stop and responsive loop controls',async()=>{
-   const c=await browser.newContext({viewport:{width:320,height:740},hasTouch:true,deviceScaleFactor:2});const p=await c.newPage();observe(p);await p.goto(base);await ready(p);await fill(p,'amount',4);await fill(p,'pour-interval',100);
+   const c=await browser.newContext({viewport:{width:320,height:740},hasTouch:true,deviceScaleFactor:2});const p=await c.newPage();observe(p);await p.goto(base);await ready(p);await fill(p,'amount',4);await fill(p,'pour-interval',250);
+   assert.equal(await p.locator('#pour-interval').evaluate(el=>el.checkValidity()),true,'250ms must be valid on mobile');
    async function tap(){await p.locator('#repeat-drop').scrollIntoViewIfNeeded();const b=await p.locator('#repeat-drop').boundingBox();await p.touchscreen.tap(b.x+b.width/2,b.y+b.height/2);}
-   await tap();await waitAdded(p,12);await p.screenshot({path:join(evidence,'mobile-repeat.png'),fullPage:true});await tap();await unchanged(p);
+   await tap();await waitAdded(p,12);assert.equal(await p.evaluate(()=>SandpileApp.pouring.interval),250);await p.screenshot({path:join(evidence,'mobile-repeat.png'),fullPage:true});await tap();await unchanged(p);
    assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await c.close();
  });
  await check('R08 offline built file supports repeat input and stops cleanly',async()=>{
