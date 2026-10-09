@@ -1,0 +1,20 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: 137ms must be a valid integer interval
+
+false !== true
+
+    at file:///D:/soft/abelian-sandpile/scripts/verify-repeat-browser.mjs:32:11
+    at async check (file:///D:/soft/abelian-sandpile/scripts/verify-repeat-browser.mjs:20:31)
+    at async file:///D:/soft/abelian-sandpile/scripts/verify-repeat-browser.mjs:29:2 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0

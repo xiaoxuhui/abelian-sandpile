@@ -1,0 +1,11 @@
+Chrome 154.0.8037.98, headless real DOM/canvas, simulated mobile touch
+R01 desktop arbitrary integer interval, 1ms keyboard increment, locked configuration and stop: PASS
+R02 keyboard toggle and pause stop automatic input: PASS
+R03 invalid interval does not add grains; reset confirmation pauses and cancels old frames: PASS
+R04 switching to challenge cancels loop; challenge keeps one-grain rules: PASS
+R05 save-v1 export/import, reload and hidden/pagehide events never restart pouring: PASS
+R06 cumulative budget automatically stops before partial input: PASS
+R07 320px touch start/stop and responsive loop controls: PASS
+R08 offline built file supports repeat input and stops cleanly: PASS
+8 passed; 0 failed; 0 page/console/HTTP errors
+Web-only; no Android WebView or hall changes.
